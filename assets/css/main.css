@@ -2,3 +2,42 @@
 .vr {
     border-left: 2px solid gray;
 }
+
+
+.attribute-pict-wrap {
+    overflow: hidden;
+    position: relative;
+    width: 60px;
+    height: 60px;
+}
+
+.attribute-pict {
+    opacity: 0.3;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: auto;
+}
+
+.attribute-pict-content {
+    position: relative;
+    font-size: 200%;
+    text-align: center;
+}
+
+.ghost {
+    opacity: 0.3;
+}
+
+.draggable-holder {
+    width: 40px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    margin-left: auto;
+}
+
+.character-selected {
+background-color: #f8e43342;
+}

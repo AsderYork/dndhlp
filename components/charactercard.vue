@@ -25,7 +25,7 @@
           <b>{{getArmourClass}}</b>
         </div>
 
-        <div class="d-flex align-items-center mr-2 mx-1">
+        <div class="d-flex align-items-center mr-2 mx-1" >
           <div class="box text-secondary">
             <div class="border-bottom border-dark">
               13
@@ -36,9 +36,20 @@
 
           </div>
         </div>
+        <div class="draggable-holder" v-bind:style="{ backgroundImage: `url(${require('~/assets/images/noun-drag.svg')})` }">
+        </div>
+
       </div>
-      <div class="border-top mt-1">
-        8/1
+      <div class="border-top mt-1" v-if="showFull">
+        <div>
+          <div class="attribute-pict-wrap">
+            <img class="attribute-pict" src="~/assets/images/noun-strength.svg">
+            <div class="attribute-pict-content text-muted">
+              <b>14</b>
+            </div>
+          </div>
+        </div>
+        
       </div>
 
     </div>
@@ -107,7 +118,11 @@ export default {
 
     getArmourClass: function () {
       return this?.character?.armourClass;
-    }
+    },
+
+    showFull: function () {
+      return false;
+    },
 
 
   }
