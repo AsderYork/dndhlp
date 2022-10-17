@@ -9,7 +9,7 @@
         </div>
         <div class="mr-3 vr" v-if="currentInitiative"></div>
         <div>
-          <span>
+          <span class="text-nowrap">
             <span class="text-primary mb-0 h3">
               {{characterName}}
             </span>
@@ -36,8 +36,7 @@
 
           </div>
         </div>
-        <div class="draggable-holder" v-bind:style="{ backgroundImage: `url(${require('~/assets/images/noun-drag.svg')})` }">
-        </div>
+        <div class="draggable-holder" v-if="draggable" v-bind:style="{ backgroundImage: `url(${require('~/assets/images/noun-drag.svg')})` }"></div>
 
       </div>
       <div class="border-top mt-1" v-if="showFull">
@@ -70,6 +69,11 @@ export default {
     },
 
     currentInitiative: {
+    },
+
+    draggable: {
+      type: Boolean,
+      default: false,
     },
 
     character: {

@@ -9,6 +9,12 @@
     "generate": "nuxt generate"
   },
   "dependencies": {
+    "@fortawesome/free-brands-svg-icons": "^6.2.0",
+    "@fortawesome/free-regular-svg-icons": "^5.15.4",
+    "@fortawesome/free-solid-svg-icons": "^6.2.0",
+    "@fortawesome/vue-fontawesome": "^2.0.8",
+    "@nuxtjs/bootstrap-vue": "^2.0.4",
+    "@nuxtjs/fontawesome": "^1.1.2",
     "bootstrap": "^4.6.2",
     "bootstrap-vue": "^2.22.0",
     "core-js": "^3.25.3",
@@ -20,6 +26,11 @@
   },
   "devDependencies": {
     "@nuxt/types": "^2.15.8",
-    "@nuxt/typescript-build": "^2.1.0"
+    "@nuxt/typescript-build": "^2.1.0",
+    "@nuxtjs/style-resources": "^1.2.1",
+    "node-sass": "^5.0.0",
+    "sass": "^1.55.0",
+    "sass-loader": "^10.3.1",
+    "webpack": "^4.46.0"
   }
 }
