@@ -87,3 +87,9 @@ body {
     overflow-x: hidden;
     overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
   }
+
+  .centered-background {
+    background-position: center;
+     background-repeat: no-repeat;
+  }
+

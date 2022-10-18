@@ -8,24 +8,28 @@
           </div>
         </div>
         <div class="mr-3 vr" v-if="currentInitiative"></div>
-        <div>
-          <span class="text-nowrap">
-            <span class="text-primary mb-0 h3">
-              {{characterName}}
+        <div class="my-auto">
+          <div>
+            <span class="text-nowrap">
+              <span class="text-primary mb-0 h3">
+                {{characterName}}
+              </span>
+              <small class="text-muted font-bold ml-n1" v-if="levelVisible"><b>lvl.{{characterLevel}}</b></small>
             </span>
-            <small class="text-muted font-bold ml-n1" v-if="levelVisible"><b>lvl.{{characterLevel}}</b></small>
-          </span>
-          <div class="text-muted mt-n1" v-if="[raceName, className].filter(x => x !== null).length > 0">
-            {{[raceName, className].filter(x => x !== null).join(', ')}}
+          </div>
+          <div class="text-muted mt-n1" v-if="[raceName, className].filter(x => !!x).length > 0">
+            {{[raceName, className].filter(x => !!x).join(', ')}}
           </div>
         </div>
-        <div class="text-muted background p-2 px-2"
-          style="padding-left: 0.51rem!important;padding-top: 0.8rem !important; background-position: center; background-repeat: no-repeat"
+        <div class="my-auto">
+          <div class="text-muted background centered-background" v-if="getArmourClass" style="padding:6px; padding-top: 3px;"
           v-bind:style="{ backgroundImage: `url(${require('~/assets/images/shield-svgrepo-com.svg')})` }">
-          <b>{{getArmourClass}}</b>
+            <b>{{getArmourClass}}</b>
+          </div>
         </div>
+      
 
-        <div class="d-flex align-items-center mr-2 mx-1" >
+        <div class="d-flex align-items-center mr-2 mx-1" v-if="isHealthVisible">
           <div class="box text-secondary">
             <div class="border-bottom border-dark">
               13
@@ -64,6 +68,11 @@ export default {
   name: 'charactercard',
   props: {
     levelVisible: {
+      type: Boolean,
+      default: false,
+    },
+
+    minimal: {
       type: Boolean,
       default: false,
     },
@@ -108,6 +117,10 @@ export default {
       return this?.character?.class?.name;
     },
     raceName: function () {
+      const name = this?.character?.race?.name;
+      if(name == this.characterName) {
+        return '';
+      }
       return this?.character?.race?.name;
     },
     currHealth: function () {
@@ -117,10 +130,12 @@ export default {
       return this?.character?.health?.max;
     },
     isHealthVisible: function () {
+      if(this.minimal) {return false;}
       return this?.character?.health?.visible;
     },
 
     getArmourClass: function () {
+      if(this.minimal) {return false;}
       return this?.character?.armourClass;
     },
 
