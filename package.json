@@ -1,5 +1,5 @@
 {
-  "name": "dndhlp",
+  "name": "nuxttest",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -9,28 +9,20 @@
     "generate": "nuxt generate"
   },
   "dependencies": {
+    "@nuxtjs/axios": "^5.13.6",
+    "bootstrap": "^4.6.2",
+    "bootstrap-vue": "^2.22.0",
+    "core-js": "^3.25.3",
+    "node": "^16.13.1",
+    "nuxt": "^2.15.8",
+    "vue": "^2.7.10",
+    "vue-server-renderer": "^2.7.10",
+    "vue-template-compiler": "^2.7.10",
     "@fortawesome/free-brands-svg-icons": "^6.2.0",
     "@fortawesome/free-regular-svg-icons": "^5.15.4",
     "@fortawesome/free-solid-svg-icons": "^6.2.0",
     "@fortawesome/vue-fontawesome": "^2.0.8",
-    "@nuxtjs/bootstrap-vue": "^2.0.4",
     "@nuxtjs/fontawesome": "^1.1.2",
-    "bootstrap": "^4.6.2",
-    "bootstrap-vue": "^2.22.0",
-    "core-js": "^3.25.3",
-    "nuxt": "^2.15.8",
-    "vue": "^2.7.12",
-    "vue-server-renderer": "^2.7.10",
-    "vue-template-compiler": "^2.7.10",
     "vuedraggable": "^2.24.3"
-  },
-  "devDependencies": {
-    "@nuxt/types": "^2.15.8",
-    "@nuxt/typescript-build": "^2.1.0",
-    "@nuxtjs/style-resources": "^1.2.1",
-    "node-sass": "^5.0.0",
-    "sass": "^1.55.0",
-    "sass-loader": "^10.3.1",
-    "webpack": "^4.46.0"
   }
 }
