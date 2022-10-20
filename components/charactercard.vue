@@ -9,8 +9,8 @@
         </div>
         <div class="mr-3 vr" v-if="currentInitiative"></div>
         <div class="my-auto text-truncate">
-          <div>
-            <span class="text-nowrap">
+          <div class="text-truncate">
+            <span>
               <span class="text-primary mb-0 h3">
                 {{characterName}}
               </span>
@@ -40,8 +40,10 @@
 
           </div>
         </div>
-        <div class="draggable-holder" v-if="draggable" v-bind:style="{ backgroundImage: `url(${require('~/assets/images/noun-drag.svg')})` }"></div>
-
+        <div class="my-auto ml-auto">
+          <div class="draggable-holder" v-if="draggable" v-bind:style="{ backgroundImage: `url(${require('~/assets/images/noun-drag.svg')})` }"></div>
+        </div>
+       
       </div>
       <div class="border-top mt-1" v-if="showFull">
         <div>

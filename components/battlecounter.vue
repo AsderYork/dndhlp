@@ -79,31 +79,32 @@ export default {
     },
 
     endTurn: function () {
+      console.log(this.battleList);
         var skipped = 0;
         do {
           if(this.currentActiveCharacter === null) {
-            this.currentActiveCharacter = this.currentBattle[0];
+            this.currentActiveCharacter = this.battleList[0];
           } else {
-            const currIndex = this.currentBattle.indexOf(this.currentActiveCharacter);
-            if(currIndex + 1 >= this.currentBattle.length) {
-              this.currentActiveCharacter = this.currentBattle[0];
+            const currIndex = this.battleList.indexOf(this.currentActiveCharacter);
+            if(currIndex + 1 >= this.battleList.length) {
+              this.currentActiveCharacter = this.battleList[0];
               this.currentRound += 1;
             } else {
-              this.currentActiveCharacter = this.currentBattle[currIndex + 1];
+              this.currentActiveCharacter = this.battleList[currIndex + 1];
             }
           }
           skipped++;
-      } while(this.currentActiveCharacter != null && !(this.currentActiveCharacter.recieveTurn) && skipped < this.currentBattle.length);
+      } while(this.currentActiveCharacter != null && !(this.currentActiveCharacter.character.recieveTurn) && skipped < this.battleList.length);
     },
   },
   data: function () {
     return {
-      battleIndex: 1,
+      battleIndex: 2,
       currentRound: 1,
       currentActiveCharacter: null,
       currentBattle: [
         {
-          id:this.battleIndex,
+          id:1,
           character:{ id: 1, name: 'Bielzeboba', level: 3, class: { name: 'Barbarian' }, race: { name: 'Dragonborn' }, health: { max: 23, current: 12, visible: true }, armourClass: 17, recieveTurn: true },
           currentInitiative:3,
         }
