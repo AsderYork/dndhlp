@@ -1,14 +1,14 @@
 <template>
   <div class="card">
     <div class="card-body p-1 pl-2">
-      <div class="d-flex flex-row">
+      <div class="d-flex">
         <div class="d-flex align-items-end mr-2" v-if="currentInitiative">
           <div class="box h1 text-secondary" style="min-width: 38px; text-align: end;">
             {{currentInitiative}}
           </div>
         </div>
         <div class="mr-3 vr" v-if="currentInitiative"></div>
-        <div class="my-auto">
+        <div class="my-auto text-truncate">
           <div>
             <span class="text-nowrap">
               <span class="text-primary mb-0 h3">
