@@ -78,8 +78,8 @@ body {
     .sidebar-body {
       width: 100%;
     }
-
   }
+
   .sidebar .active {
     border-radius: 5px;
     box-shadow: 0 2px 5px 0 rgb(0 0 0 / 16%), 0 2px 10px 0 rgb(0 0 0 / 12%);
@@ -97,5 +97,26 @@ body {
   .centered-background {
     background-position: center;
      background-repeat: no-repeat;
+  }
+
+  .vue-dialog-buttons {
+    position: absolute;
+    bottom: 0;
+  }
+
+  .vue-dialog-button-custom {
+    font-size: inherit;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    cursor: pointer;
+    box-sizing: border-box;
+    line-height: 40px;
+    height: 40px;
+    color: inherit;
+    font: inherit;
+    outline: none;
+    border: 0;
+    border-radius: 0;
   }
 

@@ -22,6 +22,7 @@
 
 <script>
 import charactercard from './charactercard.vue';
+import charAddWindow from './charAddWindow.vue';
 export default {
   name: "Battlecounter",
   components: { },
@@ -48,6 +49,11 @@ export default {
         set(value) {
           value = value.map(x => {
             if(x.character === undefined) {
+
+              this.$modal.show(charAddWindow, {character: x}, { adaptive: true });
+              return null;
+
+
               return {
                 id:this.battleIndex++,
                 character: x,
@@ -56,7 +62,7 @@ export default {
             }
             return x;
           });
-          this.currentBattle = value;
+          this.currentBattle = value.filter(x => x !== null);
         }
     },
 
@@ -79,7 +85,7 @@ export default {
     },
 
     endTurn: function () {
-      console.log(this.battleList);
+
         var skipped = 0;
         do {
           if(this.currentActiveCharacter === null) {
@@ -112,6 +118,24 @@ export default {
         
       ],
     }
+  },
+  created() {
+    this.$nuxt.$on('addCharacterFromPalette', (char) => {
+      this.battleList = this.battleList.concat([char]);
+    });
+
+    this.$nuxt.$on('addCharacterWithInitiative', (char) => {
+
+      var newChar = {
+                id:this.battleIndex++,
+                character: char.character,
+                currentInitiative: char.initiative,
+              }
+
+      this.battleList = this.battleList.concat([newChar]);
+    });
+
+    
   }
 }
 </script>

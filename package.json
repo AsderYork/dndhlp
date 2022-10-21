@@ -1,5 +1,5 @@
 {
-  "name": "nuxttest",
+  "name": "dndhlp",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -23,6 +23,7 @@
     "@fortawesome/free-solid-svg-icons": "^6.2.0",
     "@fortawesome/vue-fontawesome": "^2.0.8",
     "@nuxtjs/fontawesome": "^1.1.2",
-    "vuedraggable": "^2.24.3"
+    "vuedraggable": "^2.24.3",
+    "vue-js-modal": "^2.0.1"
   }
 }

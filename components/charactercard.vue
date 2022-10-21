@@ -40,9 +40,16 @@
 
           </div>
         </div>
-        <div class="my-auto ml-auto">
-          <div class="draggable-holder" v-if="draggable" v-bind:style="{ backgroundImage: `url(${require('~/assets/images/noun-drag.svg')})` }"></div>
+        <div class="my-auto ml-auto" v-if="draggable">
+          <div class="draggable-holder" v-bind:style="{ backgroundImage: `url(${require('~/assets/images/noun-drag.svg')})` }"></div>
         </div>
+
+        <div class="my-auto ml-auto mr-1" v-if="addable">
+          <div class="btn text-muted" @click="$emit('addRequested')">
+            <font-awesome-icon :icon="['fa', 'plus']" size="xl"/>
+          </div>
+        </div>
+
        
       </div>
       <div class="border-top mt-1" v-if="showFull">
@@ -87,6 +94,11 @@ export default {
       default: false,
     },
 
+    addable: {
+      type: Boolean,
+      default: false,
+    },
+
     character: {
       type: Object,
       default: {
@@ -98,10 +110,6 @@ export default {
         armourClass: 17,
       }
     },
-  },
-  data() {
-    return {
-    };
   },
   computed: {
 
@@ -146,6 +154,6 @@ export default {
     },
 
 
-  }
+  },
 }
 </script>

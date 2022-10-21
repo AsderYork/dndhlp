@@ -7,7 +7,6 @@
         <nav id="sidebarMenu" class="sidebar bg-white collapse width ">
           <div class="position-sticky sidebar-body">
               ф   фыфыв чясыфыйфв
-
           </div>
         </nav>
     
