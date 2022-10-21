@@ -1,6 +1,6 @@
 <!-- Please remove this file from your project -->
 <template>
-  <div>
+  <div class="card">
     <div class="text-center">
       <div class="h2 mb-0">{{currentRound}}</div>
       <div>Round</div>
@@ -13,7 +13,8 @@
     </draggable>
     <div>
       <button class="btn btn-primary w-100" v-on:click="endTurn">
-        End turn
+        <span v-if="currentActiveCharacter">End turn</span>
+        <span v-else>Start battle</span>
       </button>
     </div>
 
@@ -49,16 +50,8 @@ export default {
         set(value) {
           value = value.map(x => {
             if(x.character === undefined) {
-
-              this.$modal.show(charAddWindow, {character: x}, { adaptive: true });
+              this.addNewCharacter(x);
               return null;
-
-
-              return {
-                id:this.battleIndex++,
-                character: x,
-                currentInitiative: 5,
-              };
             }
             return x;
           });
@@ -91,21 +84,25 @@ export default {
           skipped++;
       } while(this.currentActiveCharacter != null && !(this.currentActiveCharacter.character.recieveTurn) && skipped < this.battleList.length);
     },
+
+    addNewCharacter(character) {
+
+      if(character.isUnique) {
+        if(this.battleList.find(x => x.character.id === character.id)) {
+          return false;
+        }
+      }
+      this.$modal.show(charAddWindow, {character: character}, { adaptive: true });
+      return true;
+    }
+
   },
   data: function () {
     return {
       battleIndex: 2,
       currentRound: 1,
       currentActiveCharacter: null,
-      currentBattle: [
-        {
-          id:1,
-          character:{ id: 1, name: 'Bielzeboba', level: 3, class: { name: 'Barbarian' }, race: { name: 'Dragonborn' }, health: { max: 23, current: 12, visible: true }, armourClass: 17, recieveTurn: true },
-          currentInitiative:3,
-        }
-        
-        
-      ],
+      currentBattle: [],
     }
   },
 

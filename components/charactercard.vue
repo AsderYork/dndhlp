@@ -3,7 +3,7 @@
     <div class="card-body p-1 pl-2">
       <div class="d-flex">
         <div class="d-flex align-items-end mr-2" v-if="currentInitiative">
-          <div class="box h1 text-secondary" style="min-width: 38px; text-align: end;">
+          <div class="box h1 text-secondary text-nowrap" style="width: 45px; text-align: end; overflow: hidden;">
             {{currentInitiative}}
           </div>
         </div>
@@ -32,10 +32,10 @@
         <div class="d-flex align-items-center mr-2 mx-1" v-if="isHealthVisible">
           <div class="box text-secondary">
             <div class="border-bottom border-dark">
-              13
+              {{currHealth}}
             </div>
             <div>
-              55
+              {{maxHealth}}
             </div>
 
           </div>
