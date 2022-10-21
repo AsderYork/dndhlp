@@ -5,7 +5,7 @@
       <div class="h2 mb-0">{{currentRound}}</div>
       <div>Round</div>
     </div>
-    <draggable class="p-2" v-model="battleList" :group="{name:'battleList',put:['charactersPalette']}" @start="drag=true" @end="onDrop" ghostClass="ghost" handle=".draggable-holder" :removeOnSpill="true" :onSpill="removeItem">
+    <draggable class="p-2" v-model="battleList" :group="{name:'battleList',put:['charactersPalette']}" @start="drag=true" @end="drag=true" ghostClass="ghost" handle=".draggable-holder" :removeOnSpill="true" :onSpill="removeItem">
       <charactercard v-for="element in battleList" v-bind:key="element.id" :currentInitiative="element?.currentInitiative" :levelVisible="true"
         :character="element.character"
         :class="[currentActiveCharacter?.id == element.id ? 'character-selected' : '', element ? '' : 'character-skipped']"
