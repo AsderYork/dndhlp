@@ -67,7 +67,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import Vue from 'vue'
 import CharactersPalette from '~/components/CharactersPalette.vue';
 

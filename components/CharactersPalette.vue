@@ -5,7 +5,7 @@
       <input v-model="paletteSearch" class="form-control w-100">
     </div>
     <draggable class="px-2 pb-2" v-model="filteredPalette" :group="{name:'charactersPalette', pull:'clone'}" @start="drag=true" @end="drag=false" ghostClass="ghost" handle=".draggable-holder" :sort="false">
-        <charactercard v-for="elem in filteredPalette" v-bind:key="elem.id" :levelVisible="true" :character="elem" :draggable="!PreferAddable" :minimal="true" class="mt-1" :addable="PreferAddable" @addRequested="addFromPalette(elem)"/>
+        <charactercard v-for="element in filteredPalette" v-bind:key="element.id" :levelVisible="true" :character="element" :draggable="!PreferAddable" :minimal="true" class="mt-1" :addable="PreferAddable" @addRequested="addFromPalette(element)"/>
     </draggable>
   </div>
 </template>
@@ -25,7 +25,7 @@ export default {
       return this.charactersPalette;
     },
     PreferAddable () {
-      return this.windowWidth <= 480;
+      return this.windowWidth ? this.windowWidth <= 480 : false;
     },
   },
   data: function () {

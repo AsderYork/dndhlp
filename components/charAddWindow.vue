@@ -5,7 +5,7 @@
         <div class="my-auto" title="Initiative roll">
           <font-awesome-icon :icon="['fa', 'dice-d20']" class="px-2" size="xl"/>
         </div>
-        <input v-model="initiative" class="form-control initiative-roll"/>
+        <input v-model="initiative" ref="initiativeRoll" class="form-control initiative-roll"/>
       </div>
      
     </div>
@@ -19,7 +19,7 @@
 
 <script>
 export default {
-
+  name: 'charAddWindow',
   props: {
     character: {
       type: Object,
@@ -29,14 +29,19 @@ export default {
 
   data: function () {
     return {
-      initiative: null,
+      initiative: Math.ceil(Math.random()*20),
     }
+  },
+
+  mounted () {
+    this.$refs.initiativeRoll.select();
   },
 
   methods: {  
     addButton() {
+
       $nuxt.$emit('addCharacterWithInitiative', {character:this.character, initiative:this.initiative});
-      //$emit('close');
+      this.$emit('close');
     },
   }
 }

@@ -5,7 +5,7 @@
       <div class="h2 mb-0">{{currentRound}}</div>
       <div>Round</div>
     </div>
-    <draggable class="p-2" v-model="battleList" :group="{name:'battleList',put:['charactersPalette']}" @start="drag=true" @end="drag=false" ghostClass="ghost" handle=".draggable-holder" @add="onAdd" @drop="onDrop" @change="onChange">
+    <draggable class="p-2" v-model="battleList" :group="{name:'battleList',put:['charactersPalette']}" @start="drag=true" @end="onDrop" ghostClass="ghost" handle=".draggable-holder" :removeOnSpill="true" :onSpill="removeItem">
       <charactercard v-for="element in battleList" v-bind:key="element.id" :currentInitiative="element?.currentInitiative" :levelVisible="true"
         :character="element.character"
         :class="[currentActiveCharacter?.id == element.id ? 'character-selected' : '', element ? '' : 'character-skipped']"
@@ -68,20 +68,9 @@ export default {
 
   },
   methods: {
-
-    onChange: function({ added }) {
-      if (added) {
-        added.element = {character: added.element}; // Not published
-      }
-    },
     
-    onAdd: function(evt, eewq){
-      return false;
-      evt.draggedContex = Object.assign(sku, {selected:false});
-    },
-    onDrop: function(evt, eewq){
-      return false;
-      evt.draggedContex = Object.assign(sku, {selected:false});
+    removeItem(event){
+        this.battleList.splice(event.oldIndex, 1);
     },
 
     endTurn: function () {
@@ -119,7 +108,8 @@ export default {
       ],
     }
   },
-  created() {
+
+  mounted() {
     this.$nuxt.$on('addCharacterFromPalette', (char) => {
       this.battleList = this.battleList.concat([char]);
     });
