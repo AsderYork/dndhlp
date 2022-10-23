@@ -10,7 +10,7 @@
                 <div class="accordion-item">
                   <div class="accordion-header" id="headingOne">
                     <button type="button" class="accordion-button border-top border-bottom py-1 pl-2 w-100 text-left" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                      <font-awesome-icon :icon="['fa', 'dragon']" /> <b>Monsters</b>
+                      <font-awesome-icon :icon="['fa', 'dragon']" /> <b>Character palette</b>
                     </button>
                   </div>
                   <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#leftmenu-accordeon">

@@ -3,7 +3,7 @@
     <div class="text-center modal-caption shadow">
         <h3>Add character to a battle</h3>
       </div>
-    <div class="px-2">
+    <form class="px-2">
       <div>
         <charactercard :character="character" class="border-0"/>
       </div>
@@ -12,21 +12,21 @@
           <div class="my-auto" title="Initiative roll">
             <font-awesome-icon :icon="['fa', 'person-running']" class="px-2" size="xl" title="Initiative roll"/>
           </div>
-          <input v-model="initiative" ref="initiativeRoll" class="form-control"/>
+          <input type="number" v-model="initiative" ref="initiativeRoll" class="form-control" min="1" max="20"/>
         </div>
 
         <div class="d-flex mt-1">
           <div class="my-auto" title="Initiative roll">
             <font-awesome-icon :icon="['fa', 'plus']" class="px-2" size="xl" title="health"/>
           </div>
-          <input v-model="characterHealth" ref="health" class="form-control"/>
+          <input type="number" v-model="characterHealth" ref="health" class="form-control"/>
         </div>
        
       </div>
      
       
      
-    </div>
+    </form>
     <div class="vue-dialog-buttons">
       <button type="button" class="vue-dialog-button-custom btn btn-secondary" style="flex: 1 1 100%;" @click="$emit('close')">Cancel</button>
       <button type="button" class="vue-dialog-button-custom btn btn-primary" style="flex: 1 1 100%;" @click="addButton">Add</button>
@@ -43,7 +43,8 @@ export default {
     character: {
       type: Object,
       default: {}
-    }
+    },
+    index: Number,
   },
 
   computed: {
@@ -71,7 +72,7 @@ export default {
 
   methods: {  
     addButton() {
-      $nuxt.$emit('addCharacterWithInitiative', {character:JSON.parse(JSON.stringify(this.character)), initiative:this.initiative});
+      $nuxt.$emit('addCharacterWithInitiative', {character:JSON.parse(JSON.stringify(this.character)), initiative:this.initiative, insertIndex:this.index});
       this.$emit('close');
     },
   }

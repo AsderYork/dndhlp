@@ -4,7 +4,15 @@
       <div class="d-flex">
         <div class="d-flex align-items-end mr-2" v-if="currentInitiative">
           <div class="box h1 text-secondary text-nowrap" style="width: 45px; text-align: end; overflow: hidden;">
-            {{currentInitiative}}
+            <span v-if="canEditInitative">
+                <span @click="editInitiative" v-if="!isInitiativeEdit">
+                  {{currentInitiative}}
+                </span>
+                <input type="number" v-else v-model="tmpInitiative" class="form-control" ref="initiativeEditor" @blur="stopEditingInitiative"/>
+            </span>
+            <span v-else>
+                {{currentInitiative}}
+            </span>
           </div>
         </div>
         <div class="mr-3 vr" v-if="currentInitiative"></div>
@@ -86,8 +94,7 @@ export default {
       default: false,
     },
 
-    currentInitiative: {
-    },
+    currentInitiative: Number,
 
     draggable: {
       type: Boolean,
@@ -110,6 +117,12 @@ export default {
         armourClass: 17,
       }
     },
+  },
+  data: function() {
+    return {
+      isInitiativeEdit: false,
+      tmpInitiative: null,
+    }
   },
   computed: {
 
@@ -153,7 +166,34 @@ export default {
       return false;
     },
 
+    editableInitiative: {
+      get() {
+        return this.currentInitiative;
+      },
+      set(val) {
+        this.$emit('initiativeChanged', parseInt(val));
+      }
+    },
+
+    canEditInitative() {
+      return this._events['initiativeChanged']?.length > 0;
+    },
+
 
   },
+  methods: {
+    editInitiative() {
+      this.isInitiativeEdit = true;
+      this.tmpInitiative = this.editableInitiative;
+      this.$nextTick(() => {
+        this.$refs.initiativeEditor.select();
+      });
+    },
+    stopEditingInitiative() {
+      this.isInitiativeEdit = false;
+      this.editableInitiative = this.tmpInitiative;
+    }
+  },
+
 }
 </script>
