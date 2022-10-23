@@ -16,8 +16,8 @@
           </div>
         </div>
         <div class="mr-3 vr" v-if="currentInitiative"></div>
-        <div class="my-auto text-truncate">
-          <div class="text-truncate">
+        <div class="my-auto text-truncate" v-htooltip>
+          <div class="text-truncate" v-htooltip>
             <span>
               <span class="text-primary mb-0 h3">
                 {{characterName}}
