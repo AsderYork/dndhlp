@@ -79,10 +79,8 @@ export default {
 
     battleList: {
         get() {
-            if(this.isAutosorting) {
-              return this.currentBattle.sort((a,b) => {return a.currentInitiative < b.currentInitiative ? 1 : ( a.currentInitiative > b.currentInitiative ? -1 : 0);});
-            }
-            return this.currentBattle
+            //return this.currentBattle;
+            return this.$store.state.battleCounter.battleList;
         },
         set(value) {
           var charactersToAdd = [];
@@ -94,11 +92,14 @@ export default {
             }
             return x;
           });
-          this.currentBattle = value.filter(x => x !== null);
+          value = value.filter(x => x !== null);
 
           if(this.isAutosorting) {
-            this.currentBattle = this.currentBattle.sort((a,b) => {return a.currentInitiative < b.currentInitiative ? 1 : ( a.currentInitiative > b.currentInitiative ? -1 : 0);});
+            value = value.sort((a,b) => {return a.currentInitiative < b.currentInitiative ? 1 : ( a.currentInitiative > b.currentInitiative ? -1 : 0);});
           }
+
+          this.$store.commit('battleCounter/setBattleList', value);
+          this.currentBattle = value;
 
           for(var char of charactersToAdd) {
             var result = this.addNewCharacter(char[0], char[1]);
@@ -166,6 +167,11 @@ export default {
 
     toggleAutosort() {
       this.autoSort = !this.autoSort;
+      if(this.autoSort) {
+        var sortable = [...this.battleList];
+        sortable.sort((a,b) => {return a.currentInitiative < b.currentInitiative ? 1 : ( a.currentInitiative > b.currentInitiative ? -1 : 0);});
+        this.$store.commit('battleCounter/setBattleList', sortable);
+      }
     },
 
     toggleDontAskForNonUniqueRolls() {
@@ -180,7 +186,9 @@ export default {
       };
 
       if(char.insertIndex) {
-        this.battleList.splice(char.insertIndex, 0, newChar);
+        var copied = [...this.battleList];
+        copied.splice(char.insertIndex, 0, newChar);
+        this.battleList = copied;
       } else {
         this.battleList = this.battleList.concat([newChar]);
       }
