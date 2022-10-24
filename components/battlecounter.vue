@@ -103,6 +103,8 @@ export default {
           for(var char of charactersToAdd) {
             var result = this.addNewCharacter(char[0], char[1]);
           }
+          
+          this.$axios.post('/api/setBattle', {battleList:this.battleList});
 
         }
     },
