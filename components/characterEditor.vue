@@ -3,7 +3,7 @@
     <div class="card-body p-1 pl-2">
       <div class="text-center d-flex justify-content-center">
         <h2>
-            <assistEditableInput v-model="currentCharacter.name" />
+            <assistEditableInput v-model="currentCharacter.name" :editable="true" />
         </h2>
       </div>
 
