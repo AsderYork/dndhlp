@@ -47,10 +47,15 @@
           </button>
 
           <!-- Brand -->
-          <span class="navbar-brand" href="#">
-            <b class="text-primary">DNDHLP</b>
-            <font-awesome-icon :icon="['fa', 'flag']" />
-          </span>
+          <div class="dropdown">
+          <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <b class="text-primary">DNDHLP</b><font-awesome-icon :icon="['fa', 'flag']" />
+          </button>
+          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+            <a class="dropdown-item" href="#"><font-awesome-icon :icon="['fa', 'plus']" /> Create character</a>
+          </div>
+        </div>
+
           <!-- Search form -->
 
 
@@ -65,6 +70,7 @@
     <!--Main layout-->
     <main style="margin-top: 58px;" class="container pt-4">
       <Battlecounter/>
+      <windowEdit class="mt-4"/>
     </main>
     <!--Main layout-->
   </div>
