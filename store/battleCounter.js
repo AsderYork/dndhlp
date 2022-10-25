@@ -4,7 +4,6 @@ function sortpred(a,b) {return a < b ? 1 : ( a > b ? -1 : 0);}
 export const state = () => ({
     battleList:[],
     currentRound:1,
-    isBattleActive:false,
     currentActiveCharacter:null,
   })
   
@@ -15,9 +14,6 @@ export const state = () => ({
     getCurrentRound(state) {
       return state.currentRound
     },
-    getIsBattleActive(state) {
-      return state.isBattleActive
-    },
     getCurrentActiveCharacter(state) {
       return state.currentActiveCharacter;
     },
@@ -26,21 +22,19 @@ export const state = () => ({
   export const mutations = {
     setBattleList(state, battleList) {
       state.battleList = battleList;
-      this.$axios.post('/api/setBattle', {battleList:this.battleList});
+      this.$axios.post('/api/setBattle', {battleList:state.battleList, currentRound: state.currentRound, activeCharacter:state.currentActiveCharacter});
     },
     updateCharacterInBattleList(state, character) {
       var oldCharIndex = state.battleList.findIndex(x => x.id === character.id);
       state.battleList[oldCharIndex] = character;
-      this.$axios.post('/api/setBattle', {battleList:this.battleList});
+      this.$axios.post('/api/setBattle', {battleList:state.battleList, currentRound: state.currentRound, activeCharacter:state.currentActiveCharacter});
     },
     setCurrentRound(state, currentRound) {
       state.currentRound = currentRound;
     },
-    setIsBattleActive(state, isBattleActive) {
-      state.isBattleActive = isBattleActive;
-    },
     setCurrentActiveCharacter(state, character) {
       state.currentActiveCharacter = character;
+      this.$axios.post('/api/setBattle', {battleList:state.battleList, currentRound: state.currentRound, activeCharacter:state.currentActiveCharacter});
     },
   }
 
@@ -68,10 +62,10 @@ export const state = () => ({
         } while(nextActiveCharacter != null && !(nextActiveCharacter.character.recieveTurn) && skipped < ln);
       }
 
-      state.commit('setCurrentActiveCharacter', nextActiveCharacter);
       if(nextRound) {
         state.commit('setCurrentRound', state.getters.getCurrentRound + 1);
       }
+      state.commit('setCurrentActiveCharacter', nextActiveCharacter);
 
     },
 

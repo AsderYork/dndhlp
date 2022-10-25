@@ -190,6 +190,7 @@ export default {
       battleIndex: 2,
       autoSort: true,
       dontAskForNonUniqueRolls: false,
+      
     }
   },
 

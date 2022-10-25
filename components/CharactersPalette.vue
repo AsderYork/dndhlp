@@ -25,7 +25,7 @@ export default {
       return this.charactersPalette;
     },
     PreferAddable () {
-      return this.windowWidth ? this.windowWidth <= 480 : false;
+      return this.isCntrlPressed ? true : (this.windowWidth ? this.windowWidth <= 480 : false);
     },
   },
   data: function () {
@@ -33,15 +33,21 @@ export default {
       windowWidth : (typeof window !== 'undefined') ? window.innerWidth : 0,
       paletteSearch: '',
       charactersPalette: [],
+      isCntrlPressed:false,
     }
   },
   mounted() {
     this.$nextTick(() => {
       window.addEventListener('resize', this.onResize);
+      window.addEventListener('keydown', this.cntrlKeyActivate);
+      window.addEventListener('keyup', this.cntrlKeyDeactivate);
+
     })
   },
   beforeDestroy() { 
     window.removeEventListener('resize', this.onResize); 
+    window.removeEventListener('keydown', this.cntrlKeyActivate); 
+    window.removeEventListener('keyup', this.cntrlKeyDeactivate); 
   },
   methods: {  
     onResize() {
@@ -50,6 +56,16 @@ export default {
     addFromPalette(character) {
       $nuxt.$emit('addCharacterFromPalette', character);
     },
+
+    cntrlKeyActivate(e) {
+      if(e.code === 'ControlLeft') {this.isCntrlPressed = true;}
+    },
+
+    cntrlKeyDeactivate(e) {
+      if(e.code === 'ControlLeft') {this.isCntrlPressed = false;}
+    },
+
+
   },
   async fetch() {
     const response = await this.$axios.$get('/api/charatersPalette');
