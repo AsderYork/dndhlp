@@ -62,6 +62,8 @@
 import charactercard from './charactercard.vue';
 import charAddWindow from './charAddWindow.vue';
 import WarningModalVue from './WarningModal.vue';
+function sortpred(a,b) {return a < b ? 1 : ( a > b ? -1 : 0);}
+
 export default {
   name: "Battlecounter",
   components: { },
@@ -70,44 +72,36 @@ export default {
       type: Boolean,
       default: false,
     },
-    
   },
   computed: {
     isBattleEmpty() {
-      return this.currentBattle.length === 0;
+      return this.battleList.length === 0;
     },
 
     battleList: {
         get() {
-            //return this.currentBattle;
+          this.recalc;
             return this.$store.state.battleCounter.battleList;
         },
         set(value) {
-          var charactersToAdd = [];
-
-          value = value.map((x, i) => {
-            if(x.character === undefined) {
-              charactersToAdd.push([x,i]);
-              return null;
-            }
-            return x;
-          });
-          value = value.filter(x => x !== null);
-
-          if(this.isAutosorting) {
-            value = value.sort((a,b) => {return a.currentInitiative < b.currentInitiative ? 1 : ( a.currentInitiative > b.currentInitiative ? -1 : 0);});
-          }
-
+          var charactersToAdd = value.map((x,i) => [x,i]).filter(ar => ar[0].character === undefined);
+          value = value.filter(x => x.character !== undefined);
+          value = this.isAutosorting ? value.sort((a,b) => sortpred(a.currentInitiative, b.currentInitiative)) : value;
           this.$store.commit('battleCounter/setBattleList', value);
-          this.currentBattle = value;
 
-          for(var char of charactersToAdd) {
-            var result = this.addNewCharacter(char[0], char[1]);
-          }
-          
-          this.$axios.post('/api/setBattle', {battleList:this.battleList});
+          charactersToAdd.map(x => this.addNewCharacter(x[0], x[1]));
 
         }
+    },
+
+    currentRound() {
+      this.recalc;
+      return this.$store.state.battleCounter.currentRound;
+    },
+
+    currentActiveCharacter() {
+      this.recalc;
+      return this.$store.state.battleCounter.currentActiveCharacter;
     },
 
     isBattleStarted() {
@@ -126,22 +120,8 @@ export default {
     },
 
     endTurn: function () {
-
-        var skipped = 0;
-        do {
-          if(this.currentActiveCharacter === null) {
-            this.currentActiveCharacter = this.battleList[0];
-          } else {
-            const currIndex = this.battleList.indexOf(this.currentActiveCharacter);
-            if(currIndex + 1 >= this.battleList.length) {
-              this.currentActiveCharacter = this.battleList[0];
-              this.currentRound += 1;
-            } else {
-              this.currentActiveCharacter = this.battleList[currIndex + 1];
-            }
-          }
-          skipped++;
-      } while(this.currentActiveCharacter != null && !(this.currentActiveCharacter.character.recieveTurn) && skipped < this.battleList.length);
+      this.$store.dispatch('battleCounter/nextTurn');
+      this.recalc++;
     },
 
     addNewCharacter(character, index) {
@@ -196,16 +176,18 @@ export default {
     },
 
     initiativeChanged(elem, newInitiative) {
-      elem.currentInitiative = newInitiative;
+      this.$store.commit('battleCounter/updateCharacterInBattleList', Object.assign({}, elem, {currentInitiative: newInitiative}));
+      if(this.isAutosorting) {
+        this.$store.dispatch('battleCounter/sortBattleList');
+      }
+      this.recalc++;
     }
 
   },
   data: function () {
     return {
+      recalc: 0,
       battleIndex: 2,
-      currentRound: 1,
-      currentActiveCharacter: null,
-      currentBattle: [],
       autoSort: true,
       dontAskForNonUniqueRolls: false,
     }
