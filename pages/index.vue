@@ -70,8 +70,10 @@
     <!--Main layout-->
     <main style="margin-top: 58px;" class="container pt-4">
       <Battlecounter/>
-      <windowEdit class="mt-4"/>
+      <CharacterEditor/>
     </main>
+    
+    <!--<windowEdit/>-->
     <!--Main layout-->
   </div>
 </template>
@@ -79,9 +81,10 @@
 <script>
 import Vue from 'vue'
 import CharactersPalette from '~/components/CharactersPalette.vue';
+import CharacterEditor from '../components/characterEditor.vue';
 
 export default Vue.extend({
     name: "IndexPage",
-    components: { CharactersPalette }
+    components: { CharactersPalette, CharacterEditor }
 })
 </script>
