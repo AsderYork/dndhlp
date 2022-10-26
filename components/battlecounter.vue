@@ -121,10 +121,6 @@ export default {
       return this.autoSort;
     },
 
-    theState() {
-      return this.$store.getters['battleCounter/getFullState'];
-    },
-
   },
   methods: {
 
@@ -207,27 +203,12 @@ export default {
     }
   },
 
-  watch: {
-    "theState": function(vv) {
-      this.$root.sock.emit('battleState', vv, (resp) => {console.log(resp);});
-      }
-  },
-
     mounted() {
       this.$nuxt.$on('addCharacterFromPalette', (char) => {
         this.battleList = this.battleList.concat([char]);
       });
 
       this.$nuxt.$on('addCharacterWithInitiative', this.addCharacterWithInitiative);
-      
-      this.$root.sock = this.$nuxtSocket({name: 'main',channel: '/', persist: true});
-
-      this.$root.sock.on('battleStateChanged', (msg) => {
-        if(JSON.stringify(msg) !== JSON.stringify(this.theState)) {
-          this.$store.dispatch('battleCounter/setFullState', msg);
-        }
-      });
-
     }
   }
 </script>
