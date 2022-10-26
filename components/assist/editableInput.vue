@@ -4,7 +4,7 @@
             <span @click="startEditing" v-if="!isEditing">
                 {{changableValue}}
             </span>
-            <input type="text" v-else v-model="tmpValue" class="form-control" ref="editableField" @blur="stopEditing" @keydown="keydown"/>
+            <input :type="type" v-else v-model="tmpValue" class="form-control" ref="editableField" @blur="stopEditing" @keydown="keydown"/>
         </span>
         <span v-else>
             {{ changableValue }}
@@ -20,6 +20,10 @@ export default {
         editable: {
             type: Boolean,
             default: false,
+        },
+        type: {
+            type: String,
+            default: "text",
         },
 
     },

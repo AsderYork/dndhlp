@@ -30,6 +30,12 @@ app.all('/avaliableClasses', async (req, res) => {
     res.json(databaseData);
 });
 
+app.all('/avaliableRaces', async (req, res) => {
+    var databaseData = await prisma.Character_Race.findMany({where: {public:true}, include: {source:true}});
+    res.json(databaseData);
+});
+
+
 
 app.post('/setBattle', (req, res) => {
     console.log(req.body);

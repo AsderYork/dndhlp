@@ -37,6 +37,18 @@
     height: 40px;
 }
 
+.imgbg-unrepeatable {
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.statblock-item {
+  width: 64px;
+  height: 64px;
+}
+
+
 .character-skipped {
     background: linear-gradient(90deg, rgba(85, 85, 85, 0.37), rgba(255, 255, 255, 0));
 }
