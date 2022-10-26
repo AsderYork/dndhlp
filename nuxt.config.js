@@ -51,7 +51,8 @@ export default {
     '@nuxtjs/axios',
     'bootstrap-vue/nuxt',
     '@nuxtjs/style-resources',
-    'nuxt-socket-io'
+    'nuxt-socket-io',
+    'nuxt-vue-select',
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios

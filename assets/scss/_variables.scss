@@ -82,3 +82,26 @@ $alert-color-level:-8;
 .body-bg-2 {
     background-color: lighten($body-bg,10%);
 }
+
+body {
+  --vs-search-input-bg: #{$input-bg};
+  --vs-dropdown-bg: #{$input-bg};
+  --vs-dropdown-option--active-bg: #{$primary};
+  --vs-dropdown-option--active-color: #{$body-color};
+  --vs-controls-color: #{$body-color};
+  --vs-selected-bg: #{$input-focus-bg};
+  --vs-selected-color: #{$body-color};
+  --vs-border-color: #{$gray-400};
+  --vs-dropdown-option-color: #{$body-color};
+}
+
+.v-select.vs--open .vs__dropdown-toggle{
+  border-color: #{$primary}!important;
+  background-color: #{$gray-900};
+}
+
+.v-select.vs--open .vs__dropdown-menu{
+  border-color: #{$primary}!important;
+  background-color: #{$gray-900};
+}
+

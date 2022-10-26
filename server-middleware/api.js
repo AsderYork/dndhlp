@@ -25,6 +25,10 @@ app.all('/charatersPalette', async (req, res) => {
     })*/
 });
 
+app.all('/avaliableClasses', async (req, res) => {
+    var databaseData = await prisma.Character_Class.findMany({where: {public:true}, include: {source:true}});
+    res.json(databaseData);
+});
 
 
 app.post('/setBattle', (req, res) => {
