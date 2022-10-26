@@ -81,11 +81,7 @@ export default {
   },
   io: {
     sockets: [ // Required
-      { // At least one entry is required
-        name: 'main',
-        url: '/',
-        default: true,
-      }
+      { name: 'main'}
     ]
   },
 }

@@ -5,6 +5,12 @@ export default function(socket, io) {
         socket.broadcast.emit('battleStateChanged', msg);
         return { accepted:true };
       },
+      
+      battleCounter(msg) {
+        console.log(msg);
+        socket.broadcast.emit('battleCounter/setFullState', msg);
+        return { accepted:true };
+      },
     })
   }
 

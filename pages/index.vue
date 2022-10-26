@@ -102,6 +102,27 @@ import CharacterEditor from '../components/characterEditor.vue';
 export default Vue.extend({
   name: "IndexPage",
   components: { CharactersPalette, CharacterEditor },
+  computed: {
+    battleCounterState() {
+      return this.$store.getters['battleCounter/getFullState'];
+    },
+  },
 
+  watch: {
+    "battleCounterState": function(vv) {
+      this.$root.mainSocket.emit('battleCounter', vv, (resp) => {console.log(resp);});
+      }
+  },
+
+  mounted() {
+    this.$root.mainSocket = this.$nuxtSocket({
+      name: 'main',
+      vuex: {
+        actions: [
+          'battleCounter/setFullState'
+        ],
+      }
+    });
+  }
 })
 </script>
