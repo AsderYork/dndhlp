@@ -17,24 +17,25 @@ export const state = () => ({
     getCurrentActiveCharacter(state) {
       return state.currentActiveCharacter;
     },
+
+    getFullState(state) {
+      return {battleList:state.battleList, currentRound: state.currentRound, activeCharacter:state.currentActiveCharacter};
+    },
   }
   
   export const mutations = {
     setBattleList(state, battleList) {
       state.battleList = battleList;
-      this.$axios.post('/api/setBattle', {battleList:state.battleList, currentRound: state.currentRound, activeCharacter:state.currentActiveCharacter});
     },
     updateCharacterInBattleList(state, character) {
       var oldCharIndex = state.battleList.findIndex(x => x.id === character.id);
       state.battleList[oldCharIndex] = character;
-      this.$axios.post('/api/setBattle', {battleList:state.battleList, currentRound: state.currentRound, activeCharacter:state.currentActiveCharacter});
     },
     setCurrentRound(state, currentRound) {
       state.currentRound = currentRound;
     },
     setCurrentActiveCharacter(state, character) {
       state.currentActiveCharacter = character;
-      this.$axios.post('/api/setBattle', {battleList:state.battleList, currentRound: state.currentRound, activeCharacter:state.currentActiveCharacter});
     },
   }
 
@@ -68,6 +69,12 @@ export const state = () => ({
       state.commit('setCurrentActiveCharacter', nextActiveCharacter);
 
     },
+
+    setFullState(state, newState) {
+      state.commit('setCurrentRound', newState.currentRound);
+      state.commit('setBattleList', newState.battleList)
+      state.commit('setCurrentActiveCharacter', newState.activeCharacter)
+    }
 
   }
   

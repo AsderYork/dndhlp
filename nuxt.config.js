@@ -50,7 +50,8 @@ export default {
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
     'bootstrap-vue/nuxt',
-    '@nuxtjs/style-resources'
+    '@nuxtjs/style-resources',
+    'nuxt-socket-io'
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
@@ -77,5 +78,14 @@ export default {
   },
   styleResources: {
     scss: '@/assets/scss/_variables.scss'
-  }
+  },
+  io: {
+    sockets: [ // Required
+      { // At least one entry is required
+        name: 'main',
+        url: '/',
+        default: true,
+      }
+    ]
+  },
 }
