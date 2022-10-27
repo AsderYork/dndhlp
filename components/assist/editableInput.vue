@@ -2,9 +2,10 @@
     <span>
         <span v-if="editable">
             <span @click="startEditing" v-if="!isEditing">
-                {{changableValue}}
+                {{ changableValue }}
             </span>
-            <input :type="htmlType" v-else v-model="tmpValue" class="form-control" ref="editableField" @blur="stopEditing" @keydown="keydown"/>
+            <input :type="htmlType" v-else v-model="tmpValue" class="form-control" ref="editableField"
+                @blur="stopEditing" @keydown="keydown" />
         </span>
         <span v-else>
             {{ changableValue }}
@@ -44,12 +45,15 @@ export default {
                 return this.content;
             },
             set(val) {
+                if(['numberex', 'number'].includes(this.type)) {
+                    val = parseInt(val);
+                }
                 this.content = val;
                 this.handleInput();
             },
         },
         htmlType() {
-            if(this.type === 'numberex') {return 'text';}
+            if (this.type === 'numberex') { return 'text'; }
             return this.type;
         }
     },
@@ -61,7 +65,7 @@ export default {
             this.isEditing = true;
             this.tmpValue = this.changableValue;
             this.$nextTick(() => {
-                if(this.selectOnEdit) {
+                if (this.selectOnEdit) {
                     this.$refs.editableField.select();
                 } else {
                     this.$refs.editableField.focus();
@@ -70,19 +74,19 @@ export default {
         },
         stopEditing() {
             this.isEditing = false;
-            if(this.tmpValue != '') {
-                if(this.type === 'numberex' && (typeof this.tmpValue === 'string' || this.tmpValue instanceof String)) {
+            if (this.tmpValue != '') {
+                if (this.type === 'numberex' && (typeof this.tmpValue === 'string' || this.tmpValue instanceof String)) {
                     this.tmpValue = eval(this.tmpValue.replace(/[^-()\d/*+.]/g, ''));
-                }
 
+                }
                 this.changableValue = this.tmpValue;
             }
         },
         keydown(e) {
-            if(e.which == 13) {
+            if (e.which == 13) {
                 this.stopEditing();
             }
-            if(this.type === 'numberex' && (!'1234567890+-*/ '.split('').concat(['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Backspace']).includes(e.key))) {
+            if (this.type === 'numberex' && (!'1234567890+-*/ '.split('').concat(['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Backspace']).includes(e.key))) {
                 e.preventDefault();
                 e.stopPropagation();
             }

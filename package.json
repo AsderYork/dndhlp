@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "nuxt",
+    "devd": "cross-env HOST=0.0.0.0 nuxt dev",
     "build": "nuxt build",
     "start": "nuxt start",
     "generate": "nuxt generate"
@@ -39,6 +40,7 @@
     "webpack": "^4.46.0"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "prisma": "^4.5.0"
   }
 }

@@ -20,7 +20,7 @@ model Source {
 
 model Character_Race {
   id         Int         @id @default(autoincrement())
-  name       String      
+  name       String
   Characters Character[]
   public     Boolean
   source     Source      @relation(fields: [sourceId], references: [id])
@@ -37,11 +37,29 @@ model Character_Class {
 }
 
 model Character {
-  id      Int             @id @default(autoincrement())
-  name    String?
-  race    Character_Race  @relation(fields: [raceId], references: [id])
-  raceId  Int
-  class   Character_Class @relation(fields: [classId], references: [id])
-  classId Int
-  public  Boolean
+  id          Int                    @id @default(autoincrement())
+  name        String?
+  race        Character_Race         @relation(fields: [raceId], references: [id])
+  raceId      Int
+  class       Character_Class        @relation(fields: [classId], references: [id])
+  classId     Int
+  level       Int                    @default(1)
+  public      Boolean                @default(true)
+  attributes  Character_Attributes?
+  maxHealth   Int                    @default(1)
+  health      Int                    @default(1)
+  armourClass Int?
+  trash       Boolean                @default(false)
+}
+
+model Character_Attributes {
+  id           Int       @id @default(autoincrement())
+  character    Character @relation(fields: [characterId], references: [id]) 
+  characterId  Int       @default(1) @unique
+  Strength     Int       @default(1)
+  Dexterity    Int       @default(1)
+  Constitution Int       @default(1)
+  Intelligence Int       @default(1)
+  Wisdom       Int       @default(1)
+  Charisma     Int       @default(1)
 }

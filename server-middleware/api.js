@@ -2,6 +2,36 @@ const bodyParser = require('body-parser')
 const app = require('express')()
 import { PrismaClient } from '@prisma/client'
 
+function reverseRelationship(object, key) {
+    object[`${key}Id`] = object[key].id;
+    delete object[key];
+    return object;
+}
+
+function fillNestedCreates(object) {
+    for(var key in object) {
+        if(Array.isArray(object[key])) {
+            object[key] = {createMany: object[key]};
+        } else if (typeof object[key] === 'object' && object[key] !== null) {
+            object[key] = {create: object[key]};
+        }
+    }
+    return object;
+}
+
+function fillNestedUpdates(object) {
+    for(var key in object) {
+        if(Array.isArray(object[key])) {
+            object[key] = {createMany: object[key]};
+        } else if (typeof object[key] === 'object' && object[key] !== null) {
+            object[key] = {delete: {where: {'id': object[key].id}}, create: object[key]};
+        }
+    }
+    return object;
+}
+
+
+
 const prisma = new PrismaClient()
 app.use(bodyParser.json())
 app.all('/charatersPalette', async (req, res) => {
@@ -10,10 +40,8 @@ app.all('/charatersPalette', async (req, res) => {
     databaseData = databaseData.map(x => Object.assign({level:1, health: { max: 23, current: 12, visible: true }, armourClass: 17, recieveTurn: true, isUnique:true}, x));
 
     res.json({ characters: databaseData});
-    /*console.log(rrr)
-
-
-  res.json({ characters: [
+    /*
+    res.json({ characters: [
             { id: 1, name: 'Bielzeboba', level: 3, class: { name: 'Barbarian' }, race: { name: 'Dragonborn' }, health: { max: 23, current: 12, visible: true }, armourClass: 17, recieveTurn: true, isUnique:true },
             { id: 2, name: 'MahBoiHavanski', level: 3, class: { name: 'Sorcerer' }, race: { name: 'halfling' }, health: { max: 23, current: 12, visible: true }, armourClass: 13, recieveTurn: true, isUnique:true },
             { id: 3, name: 'Cheekebreeker', level: 4, class: { name: 'Artificer' }, race: { name: 'Orc' }, health: { max: 23, current: 12, visible: true }, armourClass: 15, recieveTurn: true, isUnique:true },
@@ -38,8 +66,35 @@ app.all('/avaliableRaces', async (req, res) => {
 
 
 app.post('/setBattle', (req, res) => {
-    console.log(req.body);
-    res.json({error:null});
+    res.json({status:'ok'});
 })
+
+app.post('/saveCharacter', async (req, res) => {
+    var newCharacter = req.body;
+    newCharacter = reverseRelationship(newCharacter, 'race');
+    newCharacter = reverseRelationship(newCharacter, 'class');
+
+    if(newCharacter.id !== undefined) {
+        if(await prisma.Character.findUnique({where: {id: newCharacter.id}}) !== null) {
+            newCharacter = fillNestedUpdates(newCharacter);
+            newCharacter = await prisma.Character.update({where:{id: newCharacter.id}, data:newCharacter});
+        } else {
+            newCharacter = fillNestedCreates(newCharacter);
+        newCharacter = await prisma.Character.create({data:newCharacter});
+        }
+    } else {
+        newCharacter = fillNestedCreates(newCharacter);
+        newCharacter = await prisma.Character.create({data:newCharacter});
+    }
+    
+
+    newCharacter = await prisma.Character.findUnique({
+        where: {id: newCharacter.id},
+        include: {race:true, class:true, attributes:true}
+      });
+
+
+    res.json({status:'ok', character: newCharacter});
+});
 
 module.exports = app

@@ -84,7 +84,7 @@
     <!--Main Navigation-->
 
     <!--Main layout-->
-    <main style="margin-top: 58px;" class="container pt-4">
+    <main style="margin-top: 58px; gap:10px" class="container pt-4 d-flex flex-column">
       <Battlecounter />
       <CharacterEditor />
     </main>

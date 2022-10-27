@@ -1,4 +1,10 @@
 export default {
+
+  server: {
+    Host: '192.168.0.8',
+    port: 80 // default: 3000
+  },
+
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     title: 'dndhlp',
