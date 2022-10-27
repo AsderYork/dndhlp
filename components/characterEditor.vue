@@ -6,16 +6,31 @@
           <assistEditableInput v-model="currentCharacter.name" editable="editable" />
         </h2>
       </div>
-      <div class="d-flex flex-wrap">
-        <div>
-          <v-select style="min-width: 270px;" v-if="editable" v-model="currentCharacter.class"
-            :options="avaliableClasses" label="name" :clearable="false"></v-select>
-          <span v-else>{{ currentCharacter.class.name }}</span>
+      <div class="d-flex flex-wrap" style="gap: 0.5rem">
+        <div class="border border-secondary rounded bg-primary d-flex">
+          <div class="my-auto text-center font-weight-bold">
+            <div class="px-2 border-bottom mx-1 pb-1"><assistEditableInput v-model="currentCharacter.health.current" type="numberex" editable="editable" :selectOnEdit="false"/></div>
+            <div class="px-2 mx-1 pt-1"><assistEditableInput v-model="currentCharacter.health.max" type="numberex" editable="editable" :selectOnEdit="false"/></div>
+          </div>
         </div>
+
+        <div class="border border-secondary rounded bg-info d-flex">
+          <div class="my-auto">
+            <div class="px-2 mx-1 pt-1 font-weight-bold"><assistEditableInput v-model="currentCharacter.armourClass" type="numberex" editable="editable" :selectOnEdit="false"/></div>
+          </div>
+        </div>
+
         <div>
-          <v-select style="min-width: 270px;" v-if="editable" v-model="currentCharacter.race" :options="avaliableRaces"
-            label="name" :clearable="false"></v-select>
-          <span v-else>{{ currentCharacter.class.name }}</span>
+          <div>
+            <v-select style="min-width: 270px;" v-if="editable" v-model="currentCharacter.class"
+              :options="avaliableClasses" label="name" :clearable="false"></v-select>
+            <span v-else>{{ currentCharacter.class.name }}</span>
+          </div>
+          <div>
+            <v-select style="min-width: 270px;" v-if="editable" v-model="currentCharacter.race"
+              :options="avaliableRaces" label="name" :clearable="false"></v-select>
+            <span v-else>{{ currentCharacter.class.name }}</span>
+          </div>
         </div>
       </div>
 
@@ -30,9 +45,9 @@
               class="mx-auto imgbg-unrepeatable statblock-item d-flex">
               <div class="mx-auto my-auto">
                 <div class="h1 mb-n2">
-                <assistEditableInput type="number" v-model="attribute.value" editable="editable" />
-              </div>
-                <div class="text-center mb-n2">{{attribute.modifier}}</div>
+                  <assistEditableInput type="number" v-model="attribute.value" editable="editable" />
+                </div>
+                <div class="text-center mb-n2">{{ attribute.modifier }}</div>
               </div>
             </div>
           </div>
@@ -65,12 +80,12 @@ export default {
           race: { name: 'Dragonborn' },
           health: { max: 23, current: 12, visible: true },
           attributes: [
-            {name:'Strength', value: 12},
-            {name:'Dexterity', value: 12},
-            {name:'Constitution', value: 12},
-            {name:'Intelligence', value: 12},
-            {name:'Wisdom', value: 12},
-            {name:'Charisma', value: 12},
+            { name: 'Strength', value: 12 },
+            { name: 'Dexterity', value: 12 },
+            { name: 'Constitution', value: 12 },
+            { name: 'Intelligence', value: 12 },
+            { name: 'Wisdom', value: 12 },
+            { name: 'Charisma', value: 12 },
           ],
           armourClass: 17,
         }
@@ -81,6 +96,7 @@ export default {
     return {
       currentCharacter: JSON.parse(JSON.stringify(this.character)),
       avaliableClasses: [],
+      avaliableRaces: [],
       attributes: [
         { name: 'Strength' },
         { name: 'Dexterity' },
@@ -93,7 +109,7 @@ export default {
   },
   computed: {
     attributesComuted() {
-      return this.currentCharacter.attributes.map(x => Object.assign(x, {modifier:Math.floor((x.value-10)/2)}));
+      return this.currentCharacter.attributes.map(x => Object.assign(x, { modifier: Math.floor((x.value - 10) / 2) }));
     },
   },
 
