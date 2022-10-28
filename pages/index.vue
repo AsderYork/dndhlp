@@ -66,7 +66,7 @@
               <font-awesome-icon :icon="['fa', 'flag']" />
             </button>
             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-              <a class="dropdown-item" href="#">
+              <a class="dropdown-item" href="#" @click="createCharacter">
                 <font-awesome-icon :icon="['fa', 'plus']" /> Create character
               </a>
             </div>
@@ -84,12 +84,19 @@
     <!--Main Navigation-->
 
     <!--Main layout-->
-    <main style="margin-top: 58px; gap:10px" class="container pt-4 d-flex flex-column">
+    <main style="margin-top: 58px; gap:10px" class="container pt-4 d-flex flex-column" ref="mainWindowStorage">
       <Battlecounter />
-      <CharacterEditor />
+      <!--<CharacterEditor />-->
+
+      <windowEdit v-for="window in windows" :key="window.id" :header="window.window" @requestClose="closeWindow(window.id)">
+        <component :is="window.window" v-bind="window.props" @requestClose="closeWindow(window.id)"></component>
+      </windowEdit>
+
+
     </main>
 
-    <!--<windowEdit/>-->
+   
+    <!---->
     <!--Main layout-->
   </div>
 </template>
@@ -98,10 +105,19 @@
 import Vue from 'vue'
 import CharactersPalette from '~/components/CharactersPalette.vue';
 import CharacterEditor from '../components/characterEditor.vue';
+import windowEdit from '../components/windowEdit.vue';
+
+const possibleWindows = [CharacterEditor];
 
 export default Vue.extend({
   name: "IndexPage",
   components: { CharactersPalette, CharacterEditor },
+  data: function() {
+    return {
+      windowIdCounter: 0,
+      windows: [],
+    };
+  },
   computed: {
     battleCounterState() {
       return this.$store.getters['battleCounter/getFullState'];
@@ -114,7 +130,18 @@ export default Vue.extend({
       }
   },
 
+  methods: {
+    createCharacter() {
+      $nuxt.$emit('startWindow', {window:'characterEditor'});
+    },
+    closeWindow(windowToClose) {
+      console.log({close:windowToClose});
+      this.windows = this.windows.filter(x => x.id !== windowToClose);
+    }
+  },
+
   mounted() {
+    console.log({possibleWindows:possibleWindows});
     this.$root.mainSocket = this.$nuxtSocket({
       name: 'main',
       vuex: {
@@ -122,7 +149,16 @@ export default Vue.extend({
           'battleCounter/setFullState'
         ],
       }
+    
+    
     });
+
+    this.$nuxt.$on('startWindow', ({window, props}) => {
+      this.windows.push({id:this.windowIdCounter++, window:window, props:props});
+      return;
+      windowInstace.$on('requestClose', () => {this.$refs.mainWindowStorage.removeChild(windowInstace.$el)});
+    });
+
   }
 })
 </script>

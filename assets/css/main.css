@@ -77,6 +77,16 @@ body {
   .sidebar-body {
     width: 320px;
   }
+
+  body.floatwindows .element-window {
+    position: absolute;
+  }
+
+  body:not(.floatwindows) .element-window {
+    position: relative;
+    top: inherit !important;
+    left: inherit !important;
+  }
   
   @media (max-width: 480px) {
     .sidebar { 
@@ -85,6 +95,12 @@ body {
 
     .sidebar-body {
       width: 100vw;
+    }
+
+    body.floatwindows .element-window {
+      position: relative;
+      top: inherit !important;
+      left: inherit !important;
     }
   }
 

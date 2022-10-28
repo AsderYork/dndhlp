@@ -30,7 +30,7 @@
           </div>
         </div>
         <div class="my-auto">
-          <div class="text-muted background centered-background" v-if="getArmourClass" style="padding:6px; padding-top: 3px;"
+          <div class="text-muted background centereded-background" v-if="getArmourClass" style="padding:6px; padding-top: 3px;"
           v-bind:style="{ backgroundImage: `url(${require('~/assets/images/shield-svgrepo-com.svg')})` }">
             <b>{{getArmourClass}}</b>
           </div>
@@ -48,15 +48,25 @@
 
           </div>
         </div>
-        <div class="my-auto ml-auto" v-if="draggable">
-          <div class="draggable-holder" v-bind:style="{ backgroundImage: `url(${require('~/assets/images/noun-drag.svg')})` }"></div>
-        </div>
 
-        <div class="my-auto ml-auto mr-1" v-if="addable">
-          <div class="btn text-muted" @click="$emit('addRequested')">
-            <font-awesome-icon :icon="['fa', 'plus']" size="xl"/>
+        <div class="ml-auto d-flex">
+          <div class="my-auto " v-if="editable">
+            <a href="#">
+              <font-awesome-icon :icon="['fa', 'pen']" title="Edit" @click="attemptEdit"/>
+            </a>
+          </div>
+          <div class="my-auto" v-if="draggable">
+            <div class="draggable-holder"
+              v-bind:style="{ backgroundImage: `url(${require('~/assets/images/noun-drag.svg')})` }"></div>
+          </div>
+        
+          <div class="my-auto mr-1" v-if="addable">
+            <div class="btn text-muted" @click="$emit('addRequested')">
+              <font-awesome-icon :icon="['fa', 'plus']" size="xl" />
+            </div>
           </div>
         </div>
+        
 
        
       </div>
@@ -106,6 +116,11 @@ export default {
       default: false,
     },
 
+    editable: {
+      type: Boolean,
+      default: true,
+    },
+
     character: {
       type: Object,
       default: {
@@ -147,14 +162,14 @@ export default {
       return this?.character?.race?.name;
     },
     currHealth: function () {
-      return this?.character?.health?.current;
+      return this?.character?.health;
     },
     maxHealth: function () {
-      return this?.character?.health?.max;
+      return this?.character?.maxHealth;
     },
     isHealthVisible: function () {
       if(this.minimal) {return false;}
-      return this?.character?.health?.visible;
+      return true;
     },
 
     getArmourClass: function () {
@@ -192,6 +207,10 @@ export default {
     stopEditingInitiative() {
       this.isInitiativeEdit = false;
       this.editableInitiative = this.tmpInitiative;
+    },
+
+    attemptEdit() {
+      $nuxt.$emit('startWindow', {window:'characterEditor', props:{value:this.character}});
     }
   },
 

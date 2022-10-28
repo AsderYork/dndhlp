@@ -1,11 +1,15 @@
 <template>
-  <div class="card">
-    <div class="card-body p-1 pl-2">
+  <div>
+    <div class="p-1 pl-2">
       <div class="text-center d-flex justify-content-center border-bottom px-2 mb-2">
+        <div class="position-absolute" sty>
+
+        </div>
         <h2 class="mb-0">
           <assistEditableInput v-model="currentCharacter.name" editable="editable" />
         </h2>
       </div>
+      <div class="position-absolute text-muted" style="right: 15px;" v-if="currentCharacter.id"><small>id:{{currentCharacter.id}}</small></div>
       <div class="d-flex flex-wrap" style="gap: 0.5rem">
         <div class="border border-secondary rounded bg-primary d-flex">
           <div class="my-auto text-center font-weight-bold">
@@ -50,6 +54,7 @@
             </div>
           </div>
         </div>
+
       </div>
       <div>
         <div class="d-flex justify-content-around flex-wrap">
@@ -69,12 +74,10 @@
           </div>
         </div>
       </div>
+      <button v-if="editable && !isNewCharacter" class="btn btn-danger float-right mb-2" @click="deleteCharacter">Delete</button>
       <div v-if="editable" class="mt-2">
         <button class="btn btn-primary w-100" @click="save"><span v-if="isNewCharacter">Create</span><span v-else>Save</span></button>
       </div>
-
-
-
     </div>
   </div>
 </template>
@@ -82,7 +85,7 @@
 <script>
 
 export default {
-  name: 'charactercard',
+  name: 'characterEditor',
   props: {
     editable: {
       type: Boolean,
@@ -148,6 +151,11 @@ export default {
       var responce = await this.$axios.$post('/api/saveCharacter', this.currentCharacter);
       this.currentCharacter = responce.character;
       this.$emit('input', this.currentCharacter);
+    },
+
+    async deleteCharacter() {
+      var responce = await this.$axios.$post('/api/deleteCharacter', {id:this.currentCharacter.id});
+    this.$emit('requestClose');
     }
   },
 

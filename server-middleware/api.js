@@ -36,7 +36,7 @@ const prisma = new PrismaClient()
 app.use(bodyParser.json())
 app.all('/charatersPalette', async (req, res) => {
 
-    var databaseData = await prisma.character.findMany({where: {public:true}, include: {race:true, class:true}});
+    var databaseData = await prisma.character.findMany({where: {public:true, trash:false}, include: {race:true, class:true, attributes:true}});
     databaseData = databaseData.map(x => Object.assign({level:1, health: { max: 23, current: 12, visible: true }, armourClass: 17, recieveTurn: true, isUnique:true}, x));
 
     res.json({ characters: databaseData});
@@ -71,13 +71,21 @@ app.post('/setBattle', (req, res) => {
 
 app.post('/saveCharacter', async (req, res) => {
     var newCharacter = req.body;
+
+    const allowedKeys = ['id','name','raceId' ,'race','class', 'classId','level','attributes','maxHealth','health','armourClass'];
+    newCharacter = Object.fromEntries(Object.entries(newCharacter).filter(([key]) => allowedKeys.includes(key)));
+
     newCharacter = reverseRelationship(newCharacter, 'race');
     newCharacter = reverseRelationship(newCharacter, 'class');
 
     if(newCharacter.id !== undefined) {
         if(await prisma.Character.findUnique({where: {id: newCharacter.id}}) !== null) {
-            newCharacter = fillNestedUpdates(newCharacter);
+            //newCharacter = fillNestedUpdates(newCharacter);
+            var attributes = newCharacter.attributes;
+            delete newCharacter.attributes;
+            //console.log(newCharacter); return;
             newCharacter = await prisma.Character.update({where:{id: newCharacter.id}, data:newCharacter});
+            attributes = await prisma.Character_Attributes.update({where:{id: attributes.id}, data:attributes});
         } else {
             newCharacter = fillNestedCreates(newCharacter);
         newCharacter = await prisma.Character.create({data:newCharacter});
@@ -95,6 +103,14 @@ app.post('/saveCharacter', async (req, res) => {
 
 
     res.json({status:'ok', character: newCharacter});
+});
+
+
+
+app.post('/deleteCharacter', async (req, res) => {
+    var character = req.body;
+    await prisma.Character.update({where:{id:character.id}, data:{trash:true}});
+    res.json({status:'ok'});
 });
 
 module.exports = app
