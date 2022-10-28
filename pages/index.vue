@@ -69,6 +69,12 @@
               <a class="dropdown-item" href="#" @click="createCharacter">
                 <font-awesome-icon :icon="['fa', 'plus']" /> Create character
               </a>
+              <a class="dropdown-item" href="#" @click="nextTheme">
+                <font-awesome-icon :icon="['fa', 'palette']" /> Next theme
+              </a>
+              <a class="dropdown-item" href="#" @click="toggleFloat">
+                <font-awesome-icon :icon="['fa', 'cloud']"/> afloat
+              </a>
             </div>
           </div>
 
@@ -112,10 +118,21 @@ const possibleWindows = [CharacterEditor];
 export default Vue.extend({
   name: "IndexPage",
   components: { CharactersPalette, CharacterEditor },
+
+  head() {
+    return {
+      bodyAttrs: {
+      class: [(this.themeDark ? 'darktheme-pur' : ''), (this.floatwindows ? 'floatwindows' : '')].join(' ')
+      }
+    }
+  },
+
   data: function() {
     return {
       windowIdCounter: 0,
       windows: [],
+      themeDark: true,
+      floatwindows: false,
     };
   },
   computed: {
@@ -137,7 +154,14 @@ export default Vue.extend({
     closeWindow(windowToClose) {
       console.log({close:windowToClose});
       this.windows = this.windows.filter(x => x.id !== windowToClose);
+    },
+    nextTheme() {
+      this.themeDark = !this.themeDark
+    },
+    toggleFloat() {
+      this.floatwindows = !this.floatwindows;
     }
+
   },
 
   mounted() {
