@@ -1,7 +1,30 @@
+html.darktheme-pur {
+    @import 'themes/darktheme-pur.scss';
 
-@import '~bootstrap/scss/bootstrap.scss';
-@import '~bootstrap-vue/src/index.scss';
+    @import '~bootstrap/scss/bootstrap.scss';
+    @import '~bootstrap-vue/src/index.scss';
+    @import 'general.scss';
 
-@import 'theme';
+}
+
+html.darktheme-gol {
+    @import 'themes/darktheme-gol.scss';
+
+    @import '~bootstrap/scss/bootstrap.scss';
+    @import '~bootstrap-vue/src/index.scss';
+    @import 'general.scss';
+
+}
+
+
+html.notheme {
+    @import '~bootstrap/scss/bootstrap.scss';
+    @import '~bootstrap-vue/src/index.scss';
+    @import 'general.scss';
+}
+
+
+
+
+
 @import 'tooltip.scss';
-

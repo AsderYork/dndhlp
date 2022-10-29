@@ -1,7 +1,7 @@
 <template>
   <div class="card element-window" :style="{ 'top': this.posy + 'px', 'left': this.posx + 'px' }" @mousedown="resizeMouseDown">
     <div class="border-bottom pl-2 bg-primary rounded-top d-flex justify-content-between" @mouseup="mouseup" @mousedown="mousedown">
-      <div class="user-select-none">{{header}}</div>
+      <div class="user-select-none text-white">{{header}}</div>
       <div class="user-select-none border-left bg-secondary px-2" style="border-top-right-radius: 0.25rem"><a href="#" @click="requestClose"><font-awesome-icon :icon="['fa', 'times']" /></a></div>
     </div>
     

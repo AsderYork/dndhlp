@@ -24,9 +24,9 @@
         </draggable>
         <div class="p-4">
           <h2 class="mb-0">Battle is empty!</h2>
-          <small>Add characters from the <span class="badge badge-primary"><a href="#">
+          <small>Add characters from the <span class="badge badge-primary"><span>
                 <font-awesome-icon :icon="['fa', 'dragon']" /> character palette
-              </a></span> on the left to start a battle</small>
+          </span></span> on the left to start a battle</small>
         </div>
       </div>
     </div>

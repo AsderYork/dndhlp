@@ -62,7 +62,7 @@
           <div class="dropdown">
             <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
               data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              <b class="text-primary">DNDHLP</b>
+              <b>DNDHLP</b>
               <font-awesome-icon :icon="['fa', 'flag']" />
             </button>
             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
@@ -121,8 +121,11 @@ export default Vue.extend({
 
   head() {
     return {
+      htmlAttrs: {
+        class: [this.currentTheme, (this.floatwindows ? 'floatwindows' : '')].join(' ')
+      },
       bodyAttrs: {
-      class: [(this.themeDark ? 'darktheme-pur' : ''), (this.floatwindows ? 'floatwindows' : '')].join(' ')
+      class: [this.currentTheme, (this.floatwindows ? 'floatwindows' : '')].join(' ')
       }
     }
   },
@@ -131,8 +134,9 @@ export default Vue.extend({
     return {
       windowIdCounter: 0,
       windows: [],
-      themeDark: true,
       floatwindows: false,
+      avaliableThemes: ['darktheme-pur', 'darktheme-gol', 'notheme'],
+      currentTheme:'darktheme-gol',
     };
   },
   computed: {
@@ -156,7 +160,7 @@ export default Vue.extend({
       this.windows = this.windows.filter(x => x.id !== windowToClose);
     },
     nextTheme() {
-      this.themeDark = !this.themeDark
+      this.currentTheme = this.avaliableThemes[(this.avaliableThemes.indexOf(this.currentTheme) + 1) % this.avaliableThemes.length];
     },
     toggleFloat() {
       this.floatwindows = !this.floatwindows;
