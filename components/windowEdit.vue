@@ -68,9 +68,11 @@ export default {
   },
   mounted() {
     document.addEventListener('mousemove', this.mousemove);
+    document.addEventListener('mouseup', this.mouseup);
   },
   beforeDestroy() {
     document.removeEventListener('mousemove', this.mousemove);
+    document.removeEventListener('mouseup', this.mouseup);
   },
 
 

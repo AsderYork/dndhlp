@@ -122,10 +122,10 @@ export default Vue.extend({
   head() {
     return {
       htmlAttrs: {
-        class: [this.currentTheme, (this.floatwindows ? 'floatwindows' : '')].join(' ')
+        class: this.currentTheme
       },
       bodyAttrs: {
-      class: [this.currentTheme, (this.floatwindows ? 'floatwindows' : '')].join(' ')
+      class: (this.floatwindows ? 'floatwindows' : '')
       }
     }
   },

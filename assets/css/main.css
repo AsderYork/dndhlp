@@ -77,7 +77,7 @@
   }
 
   body.floatwindows .element-window {
-    position: absolute;
+    position: absolute!important;
   }
 
   body:not(.floatwindows) .element-window {

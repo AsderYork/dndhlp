@@ -58,7 +58,7 @@
       </div>
       <div>
         <div class="d-flex justify-content-around flex-wrap">
-          <div class="m-2 d-flex flex-column" v-for="attribute in attributesComuted" :key="attribute.name" style="flex: 1 1 0px">
+          <div class="m-2 d-flex flex-column" v-for="attribute in attributesComuted" :key="attribute.name" style="flex: 1 1 0px;width:90px">
             <div class="text-center">
               {{ attribute.name }}
             </div>
