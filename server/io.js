@@ -7,11 +7,14 @@ export default function(socket, io) {
       },
       
       battleCounter(msg) {
-        console.log(msg);
         socket.broadcast.emit('battleCounter/setFullState', msg);
         return { accepted:true };
       },
     })
+  }
+
+  export function setIO(io) { 
+    console.log('io is set!');
   }
 
   

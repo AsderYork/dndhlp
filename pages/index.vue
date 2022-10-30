@@ -177,7 +177,6 @@ export default Vue.extend({
   },
 
   mounted() {
-    console.log({possibleWindows:possibleWindows});
     this.$root.mainSocket = this.$nuxtSocket({
       name: 'main',
       vuex: {
@@ -185,8 +184,6 @@ export default Vue.extend({
           'battleCounter/setFullState'
         ],
       }
-    
-    
     });
 
     this.$nuxt.$on('startWindow', ({window, props}) => {
