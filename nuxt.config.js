@@ -82,8 +82,10 @@ export default {
     scss: '@/assets/scss/_variables.scss'
   },
   io: {
+    server: false,
     sockets: [ // Required
-      { name: 'main'}
+      { name: 'main',
+      }
     ]
   },
 }

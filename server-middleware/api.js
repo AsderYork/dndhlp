@@ -1,6 +1,8 @@
 const bodyParser = require('body-parser')
 const app = require('express')()
+
 import { PrismaClient } from '@prisma/client'
+import { register } from 'nuxt-socket-io'
 
 function reverseRelationship(object, key) {
     object[`${key}Id`] = object[key].id;
@@ -31,14 +33,15 @@ function fillNestedUpdates(object) {
 }
 
 
+var globalServer = register.server({ port: 3001 });
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 app.use(bodyParser.json())
 app.all('/charatersPalette', async (req, res) => {
 
-    var databaseData = await prisma.character.findMany({where: {public:true, trash:false}, include: {race:true, class:true, attributes:true}});
-    databaseData = databaseData.map(x => Object.assign({level:1, health: { max: 23, current: 12, visible: true }, armourClass: 17, recieveTurn: true, isUnique:true}, x));
+    console.log(await globalServer);
 
+    var databaseData = await prisma.character.findMany({where: {public:true, trash:false}, include: {race:true, class:true, attributes:true}});
     res.json({ characters: databaseData});
     /*
     res.json({ characters: [
@@ -80,10 +83,8 @@ app.post('/saveCharacter', async (req, res) => {
 
     if(newCharacter.id !== undefined) {
         if(await prisma.Character.findUnique({where: {id: newCharacter.id}}) !== null) {
-            //newCharacter = fillNestedUpdates(newCharacter);
             var attributes = newCharacter.attributes;
             delete newCharacter.attributes;
-            //console.log(newCharacter); return;
             newCharacter = await prisma.Character.update({where:{id: newCharacter.id}, data:newCharacter});
             attributes = await prisma.Character_Attributes.update({where:{id: attributes.id}, data:attributes});
         } else {
@@ -113,4 +114,4 @@ app.post('/deleteCharacter', async (req, res) => {
     res.json({status:'ok'});
 });
 
-module.exports = app
+module.exports = app;
