@@ -69,6 +69,9 @@
               <a class="dropdown-item" href="#" @click="createCharacter">
                 <font-awesome-icon :icon="['fa', 'plus']" /> Create character
               </a>
+              <a class="dropdown-item" href="#" @click="addBattleWindow">
+                <font-awesome-icon :icon="['fa', 'hand-fist']" /> Start a battle
+              </a>
               <a class="dropdown-item" href="#" @click="nextTheme">
                 <font-awesome-icon :icon="['fa', 'palette']" /> Next theme
               </a>
@@ -91,14 +94,9 @@
 
     <!--Main layout-->
     <main style="margin-top: 58px; gap:10px" class="container pt-4 d-flex flex-column" ref="mainWindowStorage">
-      <Battlecounter />
-      <!--<CharacterEditor />-->
-
-      <windowEdit v-for="window in windows" :key="window.id" :header="window.window" @requestClose="closeWindow(window.id)">
-        <component :is="window.window" v-bind="window.props" @requestClose="closeWindow(window.id)"></component>
+      <windowEdit v-for="window in windows" :key="window.id" :header="window.window" @requestClose="closeWindow(window)" @requestMoveToFront="moveWindowToFront(window)">
+        <component :is="window.window" v-bind="window.props" @requestClose="closeWindow(window)" @click="moveWindowToFront(window)"></component>
       </windowEdit>
-
-
     </main>
 
    
@@ -112,8 +110,9 @@ import Vue from 'vue'
 import CharactersPalette from '~/components/CharactersPalette.vue';
 import CharacterEditor from '../components/characterEditor.vue';
 import windowEdit from '../components/windowEdit.vue';
+import battlecounter from '../components/battlecounter.vue';
 
-const possibleWindows = [CharacterEditor];
+const possibleWindows = [CharacterEditor, battlecounter];
 
 export default Vue.extend({
   name: "IndexPage",
@@ -133,7 +132,6 @@ export default Vue.extend({
   data: function() {
     return {
       windowIdCounter: 0,
-      windows: [],
       floatwindows: false,
       avaliableThemes: ['darktheme-pur', 'darktheme-gol', 'notheme'],
       currentTheme:'darktheme-gol',
@@ -143,6 +141,9 @@ export default Vue.extend({
     battleCounterState() {
       return this.$store.getters['battleCounter/getFullState'];
     },
+    windows() {
+      return this.$store.state.windows;
+    }
   },
 
   watch: {
@@ -156,15 +157,22 @@ export default Vue.extend({
       $nuxt.$emit('startWindow', {window:'characterEditor'});
     },
     closeWindow(windowToClose) {
-      console.log({close:windowToClose});
-      this.windows = this.windows.filter(x => x.id !== windowToClose);
+      this.$store.dispatch('removeWindow', windowToClose);
     },
     nextTheme() {
       this.currentTheme = this.avaliableThemes[(this.avaliableThemes.indexOf(this.currentTheme) + 1) % this.avaliableThemes.length];
     },
     toggleFloat() {
       this.floatwindows = !this.floatwindows;
-    }
+    },
+    addBattleWindow() {
+      $nuxt.$emit('startWindow', {window:'Battlecounter'});
+    },
+    moveWindowToFront(window) {
+      if(this.floatwindows) {
+        this.$store.dispatch('moveWindowToFront', window);
+      }
+    },
 
   },
 
@@ -182,11 +190,14 @@ export default Vue.extend({
     });
 
     this.$nuxt.$on('startWindow', ({window, props}) => {
-      this.windows.push({id:this.windowIdCounter++, window:window, props:props});
-      return;
-      windowInstace.$on('requestClose', () => {this.$refs.mainWindowStorage.removeChild(windowInstace.$el)});
+      this.$store.dispatch('addWindow', {window:window, props:props});
     });
-
-  }
+  },
+  async fetch() {
+    const request = await this.$axios.$get('/api/charatersPalette');
+    this.$store.commit('setKnownCharactes', request.characters);
+  },
+  
+  fetchOnServer: false,
 })
 </script>

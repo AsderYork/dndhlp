@@ -27,12 +27,14 @@ export default {
     PreferAddable () {
       return this.isCntrlPressed ? true : (this.windowWidth ? this.windowWidth <= 480 : false);
     },
+    charactersPalette() {
+      return this.$store.state.knownCharacters;
+    },
   },
   data: function () {
     return {
       windowWidth : (typeof window !== 'undefined') ? window.innerWidth : 0,
       paletteSearch: '',
-      charactersPalette: [],
       isCntrlPressed:false,
     }
   },
@@ -67,12 +69,6 @@ export default {
 
 
   },
-  async fetch() {
-    const response = await this.$axios.$get('/api/charatersPalette');
-    this.charactersPalette = response.characters;
-  },
-  
-  fetchOnServer: false,
 
 
 }

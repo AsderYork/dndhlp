@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "nuxt",
-    "devd": "cross-env HOST=0.0.0.0 nuxt dev",
+    "devd": "cross-env HOST=0.0.0.0 PORT=80 nuxt dev",
     "build": "nuxt build",
     "start": "nuxt start",
     "generate": "nuxt generate"

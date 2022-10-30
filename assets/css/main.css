@@ -76,8 +76,10 @@
     width: 320px;
   }
 
-  body.floatwindows .element-window {
-    position: absolute!important;
+  @media (min-width: 481px) {
+    body.floatwindows .element-window {
+      position: absolute!important;
+    }
   }
 
   body:not(.floatwindows) .element-window {
