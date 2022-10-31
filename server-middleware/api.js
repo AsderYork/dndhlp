@@ -1,8 +1,8 @@
 const bodyParser = require('body-parser')
 const app = require('express')()
 
+const {getServerIo} =  require('../modules/socket')
 import { PrismaClient } from '@prisma/client'
-import { register } from 'nuxt-socket-io'
 
 function reverseRelationship(object, key) {
     object[`${key}Id`] = object[key].id;
@@ -33,16 +33,18 @@ function fillNestedUpdates(object) {
 }
 
 
-var globalServer = register.server({ port: 3001 });
+//var globalServer = register.server({ port: 3001 });
 
 const prisma = new PrismaClient();
 app.use(bodyParser.json())
 app.all('/charatersPalette', async (req, res) => {
 
-    console.log(await globalServer);
 
     var databaseData = await prisma.character.findMany({where: {public:true, trash:false}, include: {race:true, class:true, attributes:true}});
-    res.json({ characters: databaseData});
+    const response = { characters: databaseData};
+    
+
+    res.json(response);
     /*
     res.json({ characters: [
             { id: 1, name: 'Bielzeboba', level: 3, class: { name: 'Barbarian' }, race: { name: 'Dragonborn' }, health: { max: 23, current: 12, visible: true }, armourClass: 17, recieveTurn: true, isUnique:true },
@@ -104,6 +106,10 @@ app.post('/saveCharacter', async (req, res) => {
 
 
     res.json({status:'ok', character: newCharacter});
+
+    var databaseData = await prisma.character.findMany({where: {public:true, trash:false}, include: {race:true, class:true, attributes:true}});
+    const response = { characters: databaseData};
+    getServerIo().emit('reloadCharacters', response);
 });
 
 
