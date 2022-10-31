@@ -189,6 +189,11 @@ export default Vue.extend({
     this.$nuxt.$on('startWindow', ({window, props}) => {
       this.$store.dispatch('addWindow', {window:window, props:props});
     });
+
+    this.$root.mainSocket.on('reloadCharacters', (data) => {
+      this.$store.commit('setKnownCharactes', data.characters);
+    })
+
   },
   async fetch() {
     const request = await this.$axios.$get('/api/charatersPalette');

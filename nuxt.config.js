@@ -54,6 +54,7 @@ export default {
     '@nuxtjs/style-resources',
     'nuxt-socket-io',
     'nuxt-vue-select',
+    '~/modules/socket',
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
