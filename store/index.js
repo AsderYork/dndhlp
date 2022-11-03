@@ -2,6 +2,10 @@ export const state = () => ({
     windows: [],
     nextWindowId: 0,
     knownCharacters:[],
+    colors: {
+      primary:'#fff',
+      background:'#000',
+    }
   })
   
   export const getters = {
@@ -14,6 +18,9 @@ export const state = () => ({
     getKnownCharactes(state) {
       return state.windows;
     },
+    getColors(state) {
+      return state.colors;
+    },
   }
   
   export const mutations = {
@@ -25,6 +32,9 @@ export const state = () => ({
     },
     setKnownCharactes(state, characters) {
       state.knownCharacters = characters;
+    },
+    setColors(state, value) {
+      state.colors = value;
     },
   }
   

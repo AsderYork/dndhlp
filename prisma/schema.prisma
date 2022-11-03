@@ -11,10 +11,12 @@ datasource db {
 }
 
 model User {
-  id              Int               @id @default(autoincrement())
-  name            String
-  Characters      Character[]
-  CampaignPlayers CampaignPlayers[]
+  id                     Int               @id @default(autoincrement())
+  name                   String
+  Characters             Character[]
+  CampaignPlayers        CampaignPlayers[]
+  CampaignInvitesInvited CampaignInvites[] @relation("invited")
+  CampaignInvitesAuthor  CampaignInvites[] @relation("author")
 }
 
 model Campaign {
@@ -22,6 +24,22 @@ model Campaign {
   name            String
   Characters      Character[]
   CampaignPlayers CampaignPlayers[]
+  CampaignInvites CampaignInvites[]
+}
+
+model CampaignInvites {
+  id          Int      @id @default(autoincrement())
+  newUsername String? ///If it's a unregistered user invited, it's name will be written there
+  token       String? ///If it's a unregistered user, there will be a token, which can be used by the user to log in
+  User        User?    @relation("invited", fields: [UserId], references: [id])
+  UserId      Int?
+  Author      User     @relation("author", fields: [AuthorId], references: [id])
+  AuthorId    Int
+  Campaign    Campaign @relation(fields: [CampaignId], references: [id])
+  CampaignId  Int
+  dateCreated DateTime @default(now())
+  deactivated Boolean  @default(false)
+  accepted    Boolean  @default(false)
 }
 
 model CampaignRoles {

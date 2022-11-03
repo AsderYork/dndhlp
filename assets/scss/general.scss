@@ -23,6 +23,10 @@
   background-color: #{$input-bg};
 }
 
+.v-select .vs__actions button.vs__clear {
+  margin-right: 8px;
+}
+
 .v-select.vs--open .vs__dropdown-menu{
   border-color: #{$primary}!important;
   background-color: #{$input-bg};

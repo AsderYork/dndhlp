@@ -100,7 +100,7 @@
     </client-only>-->
     <!--Main layout-->
     <main style="margin-top: 58px; gap:10px" class="container pt-4 d-flex flex-column" ref="mainWindowStorage">
-      <windowEdit v-for="window in windows" :key="window.id" :header="window.window" @requestClose="closeWindow(window)" @requestMoveToFront="moveWindowToFront(window)">
+      <windowEdit v-for="window in windows" :key="window.id" :header="window.windowHeader ? window.windowHeader : window.window" @requestClose="closeWindow(window)" @requestMoveToFront="moveWindowToFront(window)">
         <component :is="window.window" v-bind="window.props" @requestClose="closeWindow(window)" @click="moveWindowToFront(window)" ></component>
       </windowEdit>
       <div v-if="windows.length === 0" class="text-center">
@@ -148,6 +148,10 @@ export default Vue.extend({
       floatwindows: false,
       avaliableThemes: ['darktheme-pur', 'darktheme-gol', 'notheme'],
       currentTheme:'darktheme-gol',
+      themeColors: {
+        'darktheme-pur':{primary:'#694481', background:'#252525'}, 
+        'darktheme-gol':{primary:'#888a20', background:'#252525'}, 
+        'notheme':{primary:'#fff', background:'#000'}},
     };
   },
   computed: {
@@ -174,6 +178,7 @@ export default Vue.extend({
     },
     nextTheme() {
       this.currentTheme = this.avaliableThemes[(this.avaliableThemes.indexOf(this.currentTheme) + 1) % this.avaliableThemes.length];
+      this.$store.commit('setColors', this.themeColors[this.currentTheme]);
     },
     toggleFloat() {
       this.floatwindows = !this.floatwindows;
@@ -182,7 +187,7 @@ export default Vue.extend({
       $nuxt.$emit('startWindow', {window:'Battlecounter'});
     },
     addCampaignStatusWindow() {
-      $nuxt.$emit('startWindow', {window:'CampaignStatus'});
+      $nuxt.$emit('startWindow', {window:'CampaignStatus', windowHeader:'Campaign'});
     },
     moveWindowToFront(window) {
       if(this.floatwindows) {
@@ -228,8 +233,8 @@ export default Vue.extend({
       }
     });
 
-    this.$nuxt.$on('startWindow', ({window, props}) => {
-      this.$store.dispatch('addWindow', {window:window, props:props});
+    this.$nuxt.$on('startWindow', ({window, props, windowHeader}) => {
+      this.$store.dispatch('addWindow', {window:window, props:props, windowHeader:windowHeader});
     });
 
     this.$root.mainSocket.on('reloadCharacters', (data) => {
@@ -239,6 +244,9 @@ export default Vue.extend({
     if(this.windows.length === 0) {
       this.addCampaignStatusWindow();
     } 
+
+  
+    this.$store.commit('setColors', this.themeColors[this.currentTheme]);
 
   },
   async fetch() {

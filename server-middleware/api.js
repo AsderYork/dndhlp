@@ -32,6 +32,8 @@ function fillNestedUpdates(object) {
     return object;
 }
 
+const campaignId = 1;
+const currentUserId = 1;
 
 //var globalServer = register.server({ port: 3001 });
 
@@ -68,19 +70,10 @@ app.all('/avaliableRaces', async (req, res) => {
     res.json(databaseData);
 });
 
-app.all('/currentCampaign', async (req, res) => {
-    const compaignId = 1;
-    var campaign = await prisma.Campaign.findUnique({
-        where: {id: compaignId},
-        include: {CampaignPlayers:{ include: {User: true, Role:true},}}
-      });
-    res.json({campaign:campaign});
-});
-
-
 app.post('/setBattle', (req, res) => {
     res.json({status:'ok'});
 })
+
 
 app.post('/saveCharacter', async (req, res) => {
     var newCharacter = req.body;
@@ -120,12 +113,65 @@ app.post('/saveCharacter', async (req, res) => {
     getServerIo().emit('reloadCharacters', response);
 });
 
-
-
 app.post('/deleteCharacter', async (req, res) => {
     var character = req.body;
     await prisma.Character.update({where:{id:character.id}, data:{trash:true}});
     res.json({status:'ok'});
 });
+
+
+app.all('/currentCampaign', async (req, res) => {
+    const compaignId = 1;
+    var campaign = await prisma.Campaign.findUnique({
+        where: {id: compaignId},
+        include: {CampaignPlayers:{ include: {User: true, Role:true},}}
+      });
+    res.json({campaign:campaign});
+});
+
+
+
+app.all('/campaignInvitesList', async (req, res) => {
+    var invites = await prisma.CampaignInvites.findMany({
+        where: {CampaignId: campaignId, deactivated:false},
+        include: {User:true, Author:true},
+      });
+    res.json({invites:invites});
+});
+
+
+app.all('/UsersFind', async (req, res) => {
+    var query = req.query.query;
+    var users = await prisma.User.findMany({
+        take: 4,
+        where: {name: {startsWith: query}},
+      });
+    res.json({users:users});
+});
+
+app.post('/campaignInvitesCreate', async (req, res) => {
+    var invite = req.body;
+    invite.AuthorId = currentUserId;
+    invite.CampaignId = campaignId;
+
+    if(invite.newUsername !== undefined) {
+        invite.token = Math.random().toString(36).substr(2).toUpperCase();
+    }
+
+    var newInvite = await prisma.CampaignInvites.create({data:invite});
+    res.json({status:'ok'});
+});
+
+app.post('/campaignInvitesDelete', async (req, res) => {
+    var invite = req.body.invite;
+    var newInvite = await prisma.CampaignInvites.update({where:{id:invite.id}, data:{deactivated:true}});
+    res.json({status:'ok'});
+});
+
+
+
+
+
+
 
 module.exports = app;

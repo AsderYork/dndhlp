@@ -34,6 +34,8 @@ export default {
     '~/plugins/vuedraggable.js',
     { src: "~/plugins/vue-js-modal", mode: "client" },
     '~/plugins/tooltip.js',
+    '~/plugins/formatDate.js',
+    { src: '~/plugins/qrcode.js', mode: "client" },
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
