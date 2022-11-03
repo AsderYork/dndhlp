@@ -10,6 +10,36 @@ datasource db {
   url      = "file:./dev.db"
 }
 
+model User {
+  id              Int               @id @default(autoincrement())
+  name            String
+  Characters      Character[]
+  CampaignPlayers CampaignPlayers[]
+}
+
+model Campaign {
+  id              Int               @id @default(autoincrement())
+  name            String
+  Characters      Character[]
+  CampaignPlayers CampaignPlayers[]
+}
+
+model CampaignRoles {
+  id              Int               @id @default(autoincrement())
+  name            String
+  CampaignPlayers CampaignPlayers[]
+}
+
+model CampaignPlayers {
+  id         Int           @id @default(autoincrement())
+  Campaign   Campaign      @relation(fields: [CampaignId], references: [id])
+  CampaignId Int
+  User       User          @relation(fields: [UserId], references: [id])
+  UserId     Int
+  Role       CampaignRoles @relation(fields: [RoleId], references: [id])
+  RoleId     Int
+}
+
 model Source {
   id        Int               @id @default(autoincrement())
   name      String            @unique
@@ -37,25 +67,29 @@ model Character_Class {
 }
 
 model Character {
-  id          Int                    @id @default(autoincrement())
+  id          Int                   @id @default(autoincrement())
   name        String?
-  race        Character_Race         @relation(fields: [raceId], references: [id])
+  race        Character_Race        @relation(fields: [raceId], references: [id])
   raceId      Int
-  class       Character_Class        @relation(fields: [classId], references: [id])
+  class       Character_Class       @relation(fields: [classId], references: [id])
   classId     Int
-  level       Int                    @default(1)
-  public      Boolean                @default(true)
+  level       Int                   @default(1)
+  public      Boolean               @default(true)
   attributes  Character_Attributes?
-  maxHealth   Int                    @default(1)
-  health      Int                    @default(1)
+  maxHealth   Int                   @default(1)
+  health      Int                   @default(1)
   armourClass Int?
-  trash       Boolean                @default(false)
+  trash       Boolean               @default(false)
+  Campaign    Campaign?             @relation(fields: [CampaignId], references: [id])
+  CampaignId  Int?
+  Author      User?                 @relation(fields: [AuthorId], references: [id])
+  AuthorId    Int?
 }
 
 model Character_Attributes {
   id           Int       @id @default(autoincrement())
-  character    Character @relation(fields: [characterId], references: [id]) 
-  characterId  Int       @default(1) @unique
+  character    Character @relation(fields: [characterId], references: [id])
+  characterId  Int       @unique @default(1)
   Strength     Int       @default(1)
   Dexterity    Int       @default(1)
   Constitution Int       @default(1)

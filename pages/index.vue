@@ -72,6 +72,9 @@
               <a class="dropdown-item" href="#" @click="addBattleWindow">
                 <font-awesome-icon :icon="['fa', 'hand-fist']" /> Start a battle
               </a>
+              <a class="dropdown-item" href="#" @click="addCampaignStatusWindow">
+                <font-awesome-icon :icon="['fa', 'hand-fist']" /> Campaign
+              </a>
               <a class="dropdown-item" href="#" @click="nextTheme">
                 <font-awesome-icon :icon="['fa', 'palette']" /> Next theme
               </a>
@@ -92,11 +95,18 @@
     </header>
     <!--Main Navigation-->
 
+    <!--<client-only placeholder="Loading...">
+      <qrcode-stream @decode="onDecode" @init="onInit"/>
+    </client-only>-->
     <!--Main layout-->
     <main style="margin-top: 58px; gap:10px" class="container pt-4 d-flex flex-column" ref="mainWindowStorage">
       <windowEdit v-for="window in windows" :key="window.id" :header="window.window" @requestClose="closeWindow(window)" @requestMoveToFront="moveWindowToFront(window)">
-        <component :is="window.window" v-bind="window.props" @requestClose="closeWindow(window)" @click="moveWindowToFront(window)"></component>
+        <component :is="window.window" v-bind="window.props" @requestClose="closeWindow(window)" @click="moveWindowToFront(window)" ></component>
       </windowEdit>
+      <div v-if="windows.length === 0" class="text-center">
+        <h1 class="mb-0">No windows!</h1>
+        <h2>There's nothing to do. Leave</h2>
+      </div>
     </main>
 
    
@@ -111,12 +121,15 @@ import CharactersPalette from '~/components/CharactersPalette.vue';
 import CharacterEditor from '../components/characterEditor.vue';
 import windowEdit from '../components/windowEdit.vue';
 import battlecounter from '../components/battlecounter.vue';
+import CampaignStatus from '../components/CampaignStatus.vue';
 
-const possibleWindows = [CharacterEditor, battlecounter];
+const possibleWindows = [CharacterEditor, battlecounter, CampaignStatus];
 
 export default Vue.extend({
   name: "IndexPage",
-  components: { CharactersPalette, CharacterEditor },
+  components: { CharactersPalette, CharacterEditor,
+    QrcodeStream: async () => {if (process.client) {const {QrcodeStream} = await import('vue-qrcode-reader'); return QrcodeStream;}},
+  },
 
   head() {
     return {
@@ -168,12 +181,41 @@ export default Vue.extend({
     addBattleWindow() {
       $nuxt.$emit('startWindow', {window:'Battlecounter'});
     },
+    addCampaignStatusWindow() {
+      $nuxt.$emit('startWindow', {window:'CampaignStatus'});
+    },
     moveWindowToFront(window) {
       if(this.floatwindows) {
         this.$store.dispatch('moveWindowToFront', window);
       }
     },
-
+    onDecode (decodedString) {
+      console.log(decodedString);
+    },
+    async onInit (promise) {
+      try {
+        await promise
+      } catch (error) {
+        if (error.name === 'NotAllowedError') {
+          this.error = "ERROR: you need to grant camera access permission"
+        } else if (error.name === 'NotFoundError') {
+          this.error = "ERROR: no camera on this device"
+        } else if (error.name === 'NotSupportedError') {
+          this.error = "ERROR: secure context required (HTTPS, localhost)"
+        } else if (error.name === 'NotReadableError') {
+          this.error = "ERROR: is the camera already in use?"
+        } else if (error.name === 'OverconstrainedError') {
+          this.error = "ERROR: installed cameras are not suitable"
+        } else if (error.name === 'StreamApiNotSupportedError') {
+          this.error = "ERROR: Stream API is not supported in this browser"
+        } else if (error.name === 'InsecureContextError') {
+          this.error = 'ERROR: Camera access is only permitted in secure context. Use HTTPS or localhost rather than HTTP.';
+        } else {
+          this.error = `ERROR: Camera error (${error.name})`;
+        }
+        //alert(this.error);
+      }
+    }
   },
 
   mounted() {
@@ -193,6 +235,10 @@ export default Vue.extend({
     this.$root.mainSocket.on('reloadCharacters', (data) => {
       this.$store.commit('setKnownCharactes', data.characters);
     })
+
+    if(this.windows.length === 0) {
+      this.addCampaignStatusWindow();
+    } 
 
   },
   async fetch() {

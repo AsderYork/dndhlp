@@ -55,6 +55,7 @@ export default {
     'nuxt-socket-io',
     'nuxt-vue-select',
     '~/modules/socket',
+    '@nuxtjs/auth-next',
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
@@ -65,6 +66,7 @@ export default {
 
   serverMiddleware: [
     { path: "/api", handler: "~/server-middleware/api.js" },
+    { path: "/api/auth", handler: "~/server-middleware/auth.js" },
   ],
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
@@ -89,4 +91,30 @@ export default {
       }
     ]
   },
+  auth: {
+    strategies: {
+      local: {
+        token: {
+          property: 'token.accessToken',
+          required: true,
+          type: 'Bearer'
+        },
+        user: {
+          property: false, // here should be `false`, as you defined in user endpoint `propertyName`
+          autoFetch: true
+        },
+        // `propertyName` in endpoint was depreacted
+        endpoints: {
+          login: { url: 'api/auth/login', method: 'post' },
+          logout: { url: 'api/auth/logout', method: 'get' },
+          user: { url: 'api/auth/user', method: 'get' },
+        }
+      },
+    },
+    plugins: [ '~/plugins/nuxt-auth.js' ]
+  },
+  /*router: {
+    middleware: ['auth']
+  }*/
 }
+

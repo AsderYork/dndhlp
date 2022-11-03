@@ -68,6 +68,14 @@ app.all('/avaliableRaces', async (req, res) => {
     res.json(databaseData);
 });
 
+app.all('/currentCampaign', async (req, res) => {
+    const compaignId = 1;
+    var campaign = await prisma.Campaign.findUnique({
+        where: {id: compaignId},
+        include: {CampaignPlayers:{ include: {User: true, Role:true},}}
+      });
+    res.json({campaign:campaign});
+});
 
 
 app.post('/setBattle', (req, res) => {

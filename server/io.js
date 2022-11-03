@@ -14,7 +14,6 @@ export default function(socket, io) {
   }
 
   export function setIO(io) { 
-    console.log('io is set!');
   }
 
   
