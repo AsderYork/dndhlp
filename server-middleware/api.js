@@ -167,7 +167,6 @@ app.all('/UsersFind', async (req, res) => {
     var allreadyInCampaign = await allCampaignPlayersById(campaignId);
     var allreadyInvited = await allActiveCampaignUserInvites(campaignId);
     var excludedUsers = allreadyInCampaign.concat(allreadyInvited);
-    console.log(excludedUsers);
 
     var users = await prisma.User.findMany({
         take: 6,
