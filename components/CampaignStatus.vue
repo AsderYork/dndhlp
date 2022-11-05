@@ -99,7 +99,7 @@
       <assistModalLook caption="Add new player" @cancel="stopAddingNewPlayer" @ok="sendCreateInvite">
         <div class="text-center">
           <div class="border-bottom">
-            Select an existing player or write a new name create request for registration
+            <h3>Select an existing player or write a new name to create a request for registration</h3>
             <div>
               <v-select v-model="userSelectedForInvite" :options="knownUsers" @search="fetchOptions" label="name"
                 :taggable="true" :createOption="createInviteUser" />

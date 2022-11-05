@@ -139,12 +139,39 @@ app.all('/campaignInvitesList', async (req, res) => {
     res.json({invites:invites});
 });
 
+async function allCampaignPlayersById(campaign) {
+    var allreadyInCampaign = await prisma.CampaignPlayers.findMany({
+        select: {UserId:true},
+        where: {CampaignId: campaign}
+    });
+    
+    allreadyInCampaign = allreadyInCampaign.map(x => x.UserId);
+    return allreadyInCampaign;
+}
+
+async function allActiveCampaignUserInvites(campaign) {
+    var allreadyInvited = await prisma.CampaignInvites.findMany({
+        select: {UserId:true},
+        where: {CampaignId: campaign, deactivated:false, NOT:{UserId:null}}
+    });
+    allreadyInvited = allreadyInvited.map(x => x.UserId);
+    return allreadyInvited;
+}
+
 
 app.all('/UsersFind', async (req, res) => {
     var query = req.query.query;
+
+    //exclude those who are allready in campaign
+    //Or allready invited
+    var allreadyInCampaign = await allCampaignPlayersById(campaignId);
+    var allreadyInvited = await allActiveCampaignUserInvites(campaignId);
+    var excludedUsers = allreadyInCampaign.concat(allreadyInvited);
+    console.log(excludedUsers);
+
     var users = await prisma.User.findMany({
-        take: 4,
-        where: {name: {startsWith: query}},
+        take: 6,
+        where: {name: {startsWith: query}, NOT:{id:{in: excludedUsers}}},
       });
     res.json({users:users});
 });
