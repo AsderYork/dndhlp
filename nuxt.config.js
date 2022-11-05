@@ -103,20 +103,19 @@ export default {
         },
         user: {
           property: false, // here should be `false`, as you defined in user endpoint `propertyName`
-          autoFetch: true
+          autoFetch: false,
         },
         // `propertyName` in endpoint was depreacted
         endpoints: {
           login: { url: 'api/auth/login', method: 'post' },
           logout: { url: 'api/auth/logout', method: 'get' },
-          user: { url: 'api/auth/user', method: 'get' },
         }
       },
     },
-    plugins: [ '~/plugins/nuxt-auth.js' ]
+    plugins: [ {src:'~/plugins/nuxt-auth.js', mode: 'server'} ]
   },
-  /*router: {
+  router: {
     middleware: ['auth']
-  }*/
+  }
 }
 

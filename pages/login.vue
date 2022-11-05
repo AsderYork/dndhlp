@@ -41,6 +41,9 @@
 
                   <button class="btn btn-outline-light btn-lg px-5 mt-2" @click.prevent="flipTokenMode"><span
                       v-if="tokenMode">Use Login/Password</span><span v-else>Use token</span></button>
+
+                      <button class="btn btn-outline-light btn-lg px-5 mt-2" @click.prevent="showStat">stat</button>
+
                 </form>
               </div>
               <div class="d-flex justify-content-center" v-else>
@@ -96,11 +99,13 @@ export default Vue.extend({
     }
   },
   mounted() {
-    if(this.$route?.query?.token) {
-      this.token = this.$route.query.token;
-      this.tokenMode = true;
-      this.attemptLogin();
+
+    if(this.$route.query.logout) {
+      let query = Object.assign({}, this.$route.query);
+      delete query.logout;
+      this.$router.replace({ query });
     }
+
   },
   methods: {
     async attemptLogin() {
@@ -115,6 +120,9 @@ export default Vue.extend({
         }
 
         let response = await this.$auth.loginWith('local', { data: data });
+        if(response.data.user) {
+          this.$auth.setUser(response.data.user);
+        }
       } catch (err) {
         console.log(err)
       }
@@ -122,7 +130,7 @@ export default Vue.extend({
       console.log(this.$auth);
     },
     showStat() {
-      console.log({ aaaa: this.$auth });
+      console.log(this.$auth);
     },
     flipTokenMode() {
       console.log(this.$route);

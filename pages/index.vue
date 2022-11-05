@@ -59,30 +59,37 @@
           </button>
 
           <!-- Brand -->
-          <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
-              data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              <b>DNDHLP</b>
-              <font-awesome-icon :icon="['fa', 'flag']" />
-            </button>
-            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-              <a class="dropdown-item" href="#" @click="createCharacter">
-                <font-awesome-icon :icon="['fa', 'plus']" /> Create character
-              </a>
-              <a class="dropdown-item" href="#" @click="addBattleWindow">
-                <font-awesome-icon :icon="['fa', 'hand-fist']" /> Start a battle
-              </a>
-              <a class="dropdown-item" href="#" @click="addCampaignStatusWindow">
-                <font-awesome-icon :icon="['fa', 'hand-fist']" /> Campaign
-              </a>
-              <a class="dropdown-item" href="#" @click="nextTheme">
-                <font-awesome-icon :icon="['fa', 'palette']" /> Next theme
-              </a>
-              <a class="dropdown-item" href="#" @click="toggleFloat">
-                <font-awesome-icon :icon="['fa', 'cloud']"/> afloat
-              </a>
+          <div class="d-flex">
+            <div class="text-primary h3 mb-0 mr-3">{{ username }}</div>
+            <div class="dropdown">
+              <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <b>DNDHLP</b>
+                <font-awesome-icon :icon="['fa', 'flag']" />
+              </button>
+              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item" href="#" @click="createCharacter">
+                  <font-awesome-icon :icon="['fa', 'plus']" /> Create character
+                </a>
+                <a class="dropdown-item" href="#" @click="addBattleWindow">
+                  <font-awesome-icon :icon="['fa', 'hand-fist']" /> Start a battle
+                </a>
+                <a class="dropdown-item" href="#" @click="addCampaignStatusWindow">
+                  <font-awesome-icon :icon="['fa', 'hand-fist']" /> Campaign
+                </a>
+                <a class="dropdown-item" href="#" @click="nextTheme">
+                  <font-awesome-icon :icon="['fa', 'palette']" /> Next theme
+                </a>
+                <a class="dropdown-item" href="#" @click="toggleFloat">
+                  <font-awesome-icon :icon="['fa', 'cloud']" /> afloat
+                </a>
+                <a class="dropdown-item" href="/api/auth/logout">
+                  <font-awesome-icon :icon="['fa', 'sign-out']" /> Log out
+                </a>
+              </div>
             </div>
           </div>
+
 
           <!-- Search form -->
 
@@ -100,8 +107,11 @@
     </client-only>-->
     <!--Main layout-->
     <main style="margin-top: 58px; gap:10px" class="container pt-4 d-flex flex-column" ref="mainWindowStorage">
-      <windowEdit v-for="window in windows" :key="window.id" :header="window.windowHeader ? window.windowHeader : window.window" @requestClose="closeWindow(window)" @requestMoveToFront="moveWindowToFront(window)">
-        <component :is="window.window" v-bind="window.props" @requestClose="closeWindow(window)" @click="moveWindowToFront(window)" ></component>
+      <windowEdit v-for="window in windows" :key="window.id"
+        :header="window.windowHeader ? window.windowHeader : window.window" @requestClose="closeWindow(window)"
+        @requestMoveToFront="moveWindowToFront(window)">
+        <component :is="window.window" v-bind="window.props" @requestClose="closeWindow(window)"
+          @click="moveWindowToFront(window)"></component>
       </windowEdit>
       <div v-if="windows.length === 0" class="text-center">
         <h1 class="mb-0">No windows!</h1>
@@ -109,7 +119,7 @@
       </div>
     </main>
 
-   
+
     <!---->
     <!--Main layout-->
   </div>
@@ -127,8 +137,9 @@ const possibleWindows = [CharacterEditor, battlecounter, CampaignStatus];
 
 export default Vue.extend({
   name: "IndexPage",
-  components: { CharactersPalette, CharacterEditor,
-    QrcodeStream: async () => {if (process.client) {const {QrcodeStream} = await import('vue-qrcode-reader'); return QrcodeStream;}},
+  components: {
+    CharactersPalette, CharacterEditor,
+    QrcodeStream: async () => { if (process.client) { const { QrcodeStream } = await import('vue-qrcode-reader'); return QrcodeStream; } },
   },
 
   head() {
@@ -137,21 +148,22 @@ export default Vue.extend({
         class: this.currentTheme
       },
       bodyAttrs: {
-      class: (this.floatwindows ? 'floatwindows' : '')
+        class: (this.floatwindows ? 'floatwindows' : '')
       }
     }
   },
 
-  data: function() {
+  data: function () {
     return {
       windowIdCounter: 0,
       floatwindows: false,
       avaliableThemes: ['darktheme-pur', 'darktheme-gol', 'notheme'],
-      currentTheme:'darktheme-gol',
+      currentTheme: 'darktheme-gol',
       themeColors: {
-        'darktheme-pur':{primary:'#694481', background:'#252525'}, 
-        'darktheme-gol':{primary:'#888a20', background:'#252525'}, 
-        'notheme':{primary:'#fff', background:'#000'}},
+        'darktheme-pur': { primary: '#694481', background: '#252525' },
+        'darktheme-gol': { primary: '#888a20', background: '#252525' },
+        'notheme': { primary: '#fff', background: '#000' }
+      },
     };
   },
   computed: {
@@ -160,18 +172,21 @@ export default Vue.extend({
     },
     windows() {
       return this.$store.state.windows;
-    }
+    },
+    username() {
+      return this.$auth.$state.user.name;
+    },
   },
 
   watch: {
-    "battleCounterState": function(vv) {
-      this.$root.mainSocket.emit('battleCounter', vv, (resp) => {console.log(resp);});
-      }
+    "battleCounterState": function (vv) {
+      this.$root.mainSocket.emit('battleCounter', vv, (resp) => { console.log(resp); });
+    }
   },
 
   methods: {
     createCharacter() {
-      $nuxt.$emit('startWindow', {window:'characterEditor'});
+      $nuxt.$emit('startWindow', { window: 'characterEditor' });
     },
     closeWindow(windowToClose) {
       this.$store.dispatch('removeWindow', windowToClose);
@@ -184,20 +199,20 @@ export default Vue.extend({
       this.floatwindows = !this.floatwindows;
     },
     addBattleWindow() {
-      $nuxt.$emit('startWindow', {window:'Battlecounter'});
+      $nuxt.$emit('startWindow', { window: 'Battlecounter' });
     },
     addCampaignStatusWindow() {
-      $nuxt.$emit('startWindow', {window:'CampaignStatus', windowHeader:'Campaign'});
+      $nuxt.$emit('startWindow', { window: 'CampaignStatus', windowHeader: 'Campaign' });
     },
     moveWindowToFront(window) {
-      if(this.floatwindows) {
+      if (this.floatwindows) {
         this.$store.dispatch('moveWindowToFront', window);
       }
     },
-    onDecode (decodedString) {
+    onDecode(decodedString) {
       console.log(decodedString);
     },
-    async onInit (promise) {
+    async onInit(promise) {
       try {
         await promise
       } catch (error) {
@@ -233,27 +248,26 @@ export default Vue.extend({
       }
     });
 
-    this.$nuxt.$on('startWindow', ({window, props, windowHeader}) => {
-      this.$store.dispatch('addWindow', {window:window, props:props, windowHeader:windowHeader});
+    this.$nuxt.$on('startWindow', ({ window, props, windowHeader }) => {
+      this.$store.dispatch('addWindow', { window: window, props: props, windowHeader: windowHeader });
     });
 
     this.$root.mainSocket.on('reloadCharacters', (data) => {
       this.$store.commit('setKnownCharactes', data.characters);
     })
 
-    if(this.windows.length === 0) {
+    if (this.windows.length === 0) {
       this.addCampaignStatusWindow();
-    } 
+    }
 
-  
+
     this.$store.commit('setColors', this.themeColors[this.currentTheme]);
-
   },
   async fetch() {
     const request = await this.$axios.$get('/api/charatersPalette');
     this.$store.commit('setKnownCharactes', request.characters);
   },
-  
+
   fetchOnServer: false,
 })
 </script>
