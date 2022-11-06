@@ -14,7 +14,7 @@ model User {
   id                     Int               @id @default(autoincrement())
   name                   String
   password               String
-  token                  String?            @unique
+  token                  String?           @unique
   Characters             Character[]
   CampaignPlayers        CampaignPlayers[]
   CampaignInvitesInvited CampaignInvites[] @relation("invited")
@@ -34,7 +34,7 @@ model Campaign {
 model CampaignInvites {
   id          Int      @id @default(autoincrement())
   newUsername String? ///If it's a unregistered user invited, it's name will be written there
-  token       String? ///If it's a unregistered user, there will be a token, which can be used by the user to log in
+  token       String?  @unique ///If it's a unregistered user, there will be a token, which can be used by the user to log in
   User        User?    @relation("invited", fields: [UserId], references: [id])
   UserId      Int?
   Author      User     @relation("author", fields: [AuthorId], references: [id])
@@ -48,7 +48,7 @@ model CampaignInvites {
 
 model CampaignRoles {
   id              Int               @id @default(autoincrement())
-  name            String
+  name            String            @unique
   CampaignPlayers CampaignPlayers[]
 }
 

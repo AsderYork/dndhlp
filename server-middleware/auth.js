@@ -48,22 +48,57 @@ function assert(value, error) {
   if(!value) {throw new Error(error);}
 }
 
+function randomString() {
+  return Math.random().toString(36).substr(2).toUpperCase();
+}
+
+async function getCampaignRoleId(role) {
+  const roleData = await prisma.campaignRoles.findUnique({where:{name:role}});
+  return roleData.id;
+}
+
+
+async function tryCreateFromToken(token) {
+  assert(isString(token) && token.length > 0, "Token is invalid");
+  var invite = await prisma.CampaignInvites.findUnique({where: {token: token}});
+  console.log({invite});
+  assert(invite != null, "No invite for this token");
+
+  var user = await prisma.User.create({data:{name:invite.newUsername, password:randomString()}});
+  const playerRole = await getCampaignRoleId("Player");
+  await prisma.CampaignPlayers.create({data:{CampaignId: invite.CampaignId, UserId: user.id, RoleId: playerRole}});
+
+  await prisma.CampaignInvites.update({where:{id:invite.id}, data:{accepted:true}});
+  return user;
+}
+
+async function findUserByLoginAndPassword(login, password) {
+  assert(isString(username) && isString(password), 'Invalid username or password');
+  const user = await prisma.User.findUnique({where: {name_password: {name: login, password: password}}, include:{CampaignPlayers:{include:{Campaign:true}}}});
+  assert(user != null, 'Invalid username or password');
+  return user;
+}
+
 
 // -- Routes --
 
 // [POST] /login
 app.post('/login', async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password, token } = req.body;
   try {
-    assert(isString(username) && isString(password), 'Invalid username or password');
-  
-    var user = await prisma.User.findUnique({where: {name_password: {name: username, password: password}}, include:{CampaignPlayers:{include:{Campaign:true}}}});
-    assert(user != null, 'Invalid username or password');
+
+
+    var user = null;
+    if(token !== undefined) {
+      user = await tryCreateFromToken(token);
+    } else {
+      user = await findUserByLoginAndPassword(username, password);
+    }
+    assert(user != null, 'No apropriate way for identifying a user exists');
   
     const accessToken = jsonwebtoken.sign({user}, appTokenSecret, { expiresIn:userTokenExpirationTime });
     res.json({token: {accessToken}, user:user});
 
-    prisma.User.update({where:{name_password: {name: username, password: password}}, data:{token:accessToken}});
 
   } catch(exception) {
     res.status(401).send(exception);

@@ -133,7 +133,7 @@ app.all('/currentCampaign', async (req, res) => {
 
 app.all('/campaignInvitesList', async (req, res) => {
     var invites = await prisma.CampaignInvites.findMany({
-        where: {CampaignId: campaignId, deactivated:false},
+        where: {CampaignId: campaignId, deactivated:false, accepted:false},
         include: {User:true, Author:true},
       });
     res.json({invites:invites});
@@ -152,7 +152,7 @@ async function allCampaignPlayersById(campaign) {
 async function allActiveCampaignUserInvites(campaign) {
     var allreadyInvited = await prisma.CampaignInvites.findMany({
         select: {UserId:true},
-        where: {CampaignId: campaign, deactivated:false, NOT:{UserId:null}}
+        where: {CampaignId: campaign, deactivated:false, accepted:false, NOT:{UserId:null}}
     });
     allreadyInvited = allreadyInvited.map(x => x.UserId);
     return allreadyInvited;
