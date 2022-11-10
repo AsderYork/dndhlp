@@ -48,6 +48,21 @@
 
 
         </div>
+
+        <div>
+            <button class="btn btn-primary" @click="$modal.show('changePassword')">change password</button>
+        </div>
+
+        <modal name="changePassword" :adaptive="true">
+            <assistModalLook :caption="'Password change'" @ok="changePassword">
+                <div>
+                    <div class="text-center">Enter new password</div>
+                    <input type="password" v-model="newPassword"/>
+                </div>
+            </assistModalLook>
+        </modal>
+
+
     </div>
 </template>
 <script>
@@ -77,9 +92,10 @@ export default {
 
     data() {
         return {
-            temporaryIgnoreForeignChange:false,//If user is change to comply with UserChanged event, there is no use sending update to the server.
-            editable: false,
+            temporaryIgnoreForeignChange: false,//If user is change to comply with UserChanged event, there is no use sending update to the server.
+            editable: true,
             presentedUser: this.user.settings == null ? Object.assign({}, this.user, { settings: {} }) : JSON.parse(JSON.stringify(this.user)),
+            newPassword: '',
             avaliableThemes: [
                 { name: 'darktheme-pur', primary: '#694481', secondary: '#7b7083', background: '#020202' },
                 { name: 'darktheme-gol', primary: '#888a20', secondary: '#8f8f80', background: '#020202' },
@@ -92,22 +108,31 @@ export default {
         presentedUser: {
             async handler(value, more, q) {
                 this.$emit('input', this.presentedUser);
-                if(this.temporaryIgnoreForeignChange) {
+                if (this.temporaryIgnoreForeignChange) {
                     this.temporaryIgnoreForeignChange = false;
-                } else {
+                } else if(editable) {
                     const response = await this.$axios.$post('/api/changeUser', this.presentedUser);
                     this.$auth.setUser(response.user);
-                    $nuxt.$emit('userChanged', {user:response.user, source:this._uid});
+                    $nuxt.$emit('userChanged', { user: response.user, source: this._uid });
                 }
             },
             deep: true
         }
     },
 
+
+    methods: {
+        async changePassword() {
+            this.$modal.hide('changePassword');
+            const response = await this.$axios.$post('/api/changeUserPassword', {userId: this.presentedUser.id, password:this.newPassword});
+            this.newPassword = null;
+        }
+    },
+
     mounted() {
-        this.$nuxt.$on('userChanged', ({user, source}) => {
+        this.$nuxt.$on('userChanged', ({ user, source }) => {
             const userStringified = JSON.stringify(user);
-            if((user.id === this.presentedUser.id) && (userStringified !== JSON.stringify(this.presentedUser)) && (source !== this._uid)) {
+            if ((user.id === this.presentedUser.id) && (userStringified !== JSON.stringify(this.presentedUser)) && (source !== this._uid)) {
                 this.temporaryIgnoreForeignChange = true;
                 this.presentedUser = JSON.parse(userStringified);
             }

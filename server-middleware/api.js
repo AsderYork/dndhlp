@@ -210,9 +210,19 @@ app.post('/changeUser', async (req, res) => {
 
     
     res.json({status:'ok', user:user});
+});
 
+app.post('/changeUserPassword', async (req, res) => {
+    var userId = req.body.userId;
+    var password = req.body.password;
 
+    await prisma.User.update({where:{id: userId}, data:{password:password}});
 
+    var user = await prisma.User.findUnique({where: {id: userId}, include:{CampaignPlayers:{include:{Campaign:true}}}});
+    user.settings = user.settings == null ? {} : JSON.parse(user.settings);
+
+    
+    res.json({status:'ok', user:user});
 });
 
 
