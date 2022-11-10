@@ -31,3 +31,7 @@
   border-color: #{$primary}!important;
   background-color: #{$input-bg};
 }
+
+.selected-halo {
+  box-shadow: 0 0 5px 3px #{$primary};
+}

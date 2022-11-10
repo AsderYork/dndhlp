@@ -195,7 +195,25 @@ app.post('/campaignInvitesDelete', async (req, res) => {
 });
 
 
+app.post('/changeUser', async (req, res) => {
+    var newUser = req.body;
+    if(newUser.settings) { newUser.settings = JSON.stringify(newUser.settings); }
 
+    const userId = newUser.id;
+    const allowedFields = ['name', 'settings'];
+    newUser = Object.fromEntries(Object.entries(newUser).filter(([key]) => allowedFields.includes(key)));
+
+    await prisma.User.update({where:{id: userId}, data:newUser});
+
+    var user = await prisma.User.findUnique({where: {id: userId}, include:{CampaignPlayers:{include:{Campaign:true}}}});
+    user.settings = user.settings == null ? {} : JSON.parse(user.settings);
+
+    
+    res.json({status:'ok', user:user});
+
+
+
+});
 
 
 

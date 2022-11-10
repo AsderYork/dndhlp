@@ -17,7 +17,7 @@ app.use(cookieParser())
 app.use(bodyParser.json())
 
 
-const userTokenExpirationTime = 60*4;
+const userTokenExpirationTime = 60*60*4;
 const appTokenSecret = "dummy";
 
 
@@ -61,7 +61,6 @@ async function getCampaignRoleId(role) {
 async function tryCreateFromToken(token) {
   assert(isString(token) && token.length > 0, "Token is invalid");
   var invite = await prisma.CampaignInvites.findUnique({where: {token: token}});
-  console.log({invite});
   assert(invite != null, "No invite for this token");
 
   var user = await prisma.User.create({data:{name:invite.newUsername, password:randomString()}});
@@ -73,7 +72,7 @@ async function tryCreateFromToken(token) {
 }
 
 async function findUserByLoginAndPassword(login, password) {
-  assert(isString(username) && isString(password), 'Invalid username or password');
+  assert(isString(login) && isString(password), 'Invalid username or password');
   const user = await prisma.User.findUnique({where: {name_password: {name: login, password: password}}, include:{CampaignPlayers:{include:{Campaign:true}}}});
   assert(user != null, 'Invalid username or password');
   return user;
@@ -86,8 +85,6 @@ async function findUserByLoginAndPassword(login, password) {
 app.post('/login', async (req, res) => {
   const { username, password, token } = req.body;
   try {
-
-
     var user = null;
     if(token !== undefined) {
       user = await tryCreateFromToken(token);
@@ -95,6 +92,8 @@ app.post('/login', async (req, res) => {
       user = await findUserByLoginAndPassword(username, password);
     }
     assert(user != null, 'No apropriate way for identifying a user exists');
+
+    user.settings = user.settings == null ? {} : JSON.parse(user.settings);
   
     const accessToken = jsonwebtoken.sign({user}, appTokenSecret, { expiresIn:userTokenExpirationTime });
     res.json({token: {accessToken}, user:user});
@@ -147,6 +146,9 @@ app.get('/user', async (req, res) => {
   try {
     var user = await prisma.User.findUnique({where: {id: req.auth.user.id}, include:{CampaignPlayers:{include:{Campaign:true}}}});
     assert(user != null, 'Invalid token');
+
+    user.settings = user.settings == null ? {} : JSON.parse(user.settings);
+
     res.json(user);
 
   } catch(exception) {

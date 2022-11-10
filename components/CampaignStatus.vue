@@ -25,9 +25,9 @@
                 A test compain for evaluating possibilities of a tool
               </div>
               <div class="tab-pane fade" id="v-pills-users" role="tabpanel" aria-labelledby="v-pills-users-tab">
-                <div v-if="campaignPlayers">
+                <div v-if="campaignPlayers" class="d-flex flex-column" style="gap:0.25rem">
                   <div class="card p-2" v-for="player in campaignPlayers">
-                    <div class="d-flex">
+                    <div class="d-flex" style="gap:0.25rem">
                       <div class="h2 mb-0">{{ player.User.name }}</div>
                       <small class="text-muted ml-1 mt-auto">{{ player.Role.name }}</small>
                     </div>

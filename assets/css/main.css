@@ -180,3 +180,26 @@ input[type=number] {
 .centereded-background{
   background-repeat: no-repeat;
 }
+
+.theme-semicicle{
+  width: 20px;
+  height: 10px;
+  border-radius: 10px 10px 0 0;
+}
+.theme-semicicle-box{
+  width: 27px;
+  height: 27px;
+  border-radius: 14px;
+}
+
+.theme-semicicle-first {
+  top: 5px;
+  left: 0px;
+  transform: rotate(-45deg);
+}
+
+.theme-semicicle-second {
+  top: 12px;
+  left: 7px;
+  transform: rotate(-225deg);
+}

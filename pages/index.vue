@@ -83,6 +83,9 @@
                 <a class="dropdown-item" href="#" @click="toggleFloat">
                   <font-awesome-icon :icon="['fa', 'cloud']" /> afloat
                 </a>
+                <a class="dropdown-item" href="#" @click="addProfileWindow">
+                  <font-awesome-icon :icon="['fa', 'user']" /> profile
+                </a>
                 <a class="dropdown-item" href="/api/auth/logout">
                   <font-awesome-icon :icon="['fa', 'sign-out']" /> Log out
                 </a>
@@ -107,11 +110,8 @@
     </client-only>-->
     <!--Main layout-->
     <main style="margin-top: 58px; gap:10px" class="container pt-4 d-flex flex-column" ref="mainWindowStorage">
-      <windowEdit v-for="window in windows" :key="window.id"
-        :header="window.windowHeader ? window.windowHeader : window.window" @requestClose="closeWindow(window)"
-        @requestMoveToFront="moveWindowToFront(window)">
-        <component :is="window.window" v-bind="window.props" @requestClose="closeWindow(window)"
-          @click="moveWindowToFront(window)"></component>
+      <windowEdit v-for="window in windows" :key="window.id" :header="window.windowHeader ? window.windowHeader : window.window" @requestClose="closeWindow(window)" @requestMoveToFront="moveWindowToFront(window)">
+        <component :is="window.window" v-bind="window.props" v-on="window.on" @requestClose="closeWindow(window)" @click="moveWindowToFront(window)"></component>
       </windowEdit>
       <div v-if="windows.length === 0" class="text-center">
         <h1 class="mb-0">No windows!</h1>
@@ -132,8 +132,9 @@ import CharacterEditor from '../components/characterEditor.vue';
 import windowEdit from '../components/windowEdit.vue';
 import battlecounter from '../components/battlecounter.vue';
 import CampaignStatus from '../components/CampaignStatus.vue';
+import userprofile from '../components/userprofile.vue';
 
-const possibleWindows = [CharacterEditor, battlecounter, CampaignStatus];
+const possibleWindows = [CharacterEditor, battlecounter, CampaignStatus, userprofile];
 
 export default Vue.extend({
   name: "IndexPage",
@@ -145,10 +146,10 @@ export default Vue.extend({
   head() {
     return {
       htmlAttrs: {
-        class: this.currentTheme
+        class: this.userCurrentTheme
       },
       bodyAttrs: {
-        class: (this.floatwindows ? 'floatwindows' : '')
+        class: (this.userUseAfloat ? 'floatwindows' : '')
       }
     }
   },
@@ -158,7 +159,6 @@ export default Vue.extend({
       windowIdCounter: 0,
       floatwindows: false,
       avaliableThemes: ['darktheme-pur', 'darktheme-gol', 'notheme'],
-      currentTheme: 'darktheme-gol',
       themeColors: {
         'darktheme-pur': { primary: '#694481', background: '#252525' },
         'darktheme-gol': { primary: '#888a20', background: '#252525' },
@@ -167,6 +167,15 @@ export default Vue.extend({
     };
   },
   computed: {
+
+    userUseAfloat() {
+      return this.$auth.$state.user?.settings?.useAfloat ? this.$auth.$state.user.settings.useAfloat : false;
+    },
+
+    userCurrentTheme() {
+      return this.$auth.$state.user?.settings?.preferedTheme ? this.$auth.$state.user.settings.preferedTheme : this.avaliableThemes[0];
+    },
+
     battleCounterState() {
       return this.$store.getters['battleCounter/getFullState'];
     },
@@ -185,21 +194,35 @@ export default Vue.extend({
   },
 
   methods: {
+
+    async injectUserSettings(settings) {
+      var tmpUser = JSON.parse(JSON.stringify(this.$auth.$state.user));
+      tmpUser.settings = tmpUser.settings ? tmpUser.settings : {};
+      tmpUser.settings = Object.assign(tmpUser.settings, settings);
+
+      const response = await this.$axios.$post('/api/changeUser', tmpUser);
+      this.$auth.setUser(response.user);
+      $nuxt.$emit('userChanged', {user:response.user, source:this._uid});
+    },
+
     createCharacter() {
       $nuxt.$emit('startWindow', { window: 'characterEditor' });
     },
     closeWindow(windowToClose) {
       this.$store.dispatch('removeWindow', windowToClose);
     },
-    nextTheme() {
-      this.currentTheme = this.avaliableThemes[(this.avaliableThemes.indexOf(this.currentTheme) + 1) % this.avaliableThemes.length];
-      this.$store.commit('setColors', this.themeColors[this.currentTheme]);
+    async nextTheme() {
+      const nextTheme = this.avaliableThemes[(this.avaliableThemes.indexOf(this.userCurrentTheme) + 1) % this.avaliableThemes.length];
+      await this.injectUserSettings({preferedTheme: nextTheme});
     },
-    toggleFloat() {
-      this.floatwindows = !this.floatwindows;
+    async toggleFloat() {
+      await this.injectUserSettings({useAfloat: !this.userUseAfloat});
     },
     addBattleWindow() {
       $nuxt.$emit('startWindow', { window: 'Battlecounter' });
+    },
+    addProfileWindow() {
+      $nuxt.$emit('startWindow', { window: 'userprofile', windowHeader: `User Profile ${this.$auth.$state.user.name}`, props:{user:this.$auth.$state.user}});
     },
     addCampaignStatusWindow() {
       $nuxt.$emit('startWindow', { window: 'CampaignStatus', windowHeader: 'Campaign' });
@@ -209,6 +232,10 @@ export default Vue.extend({
         this.$store.dispatch('moveWindowToFront', window);
       }
     },
+
+
+
+
     onDecode(decodedString) {
       console.log(decodedString);
     },
@@ -248,8 +275,8 @@ export default Vue.extend({
       }
     });
 
-    this.$nuxt.$on('startWindow', ({ window, props, windowHeader }) => {
-      this.$store.dispatch('addWindow', { window: window, props: props, windowHeader: windowHeader });
+    this.$nuxt.$on('startWindow', ({ window, props, windowHeader, on }) => {
+      this.$store.dispatch('addWindow', { window: window, props: props, windowHeader: windowHeader, on: on});
     });
 
     this.$root.mainSocket.on('reloadCharacters', (data) => {
@@ -257,7 +284,7 @@ export default Vue.extend({
     })
 
     if (this.windows.length === 0) {
-      this.addCampaignStatusWindow();
+      this.addProfileWindow();
     }
 
 

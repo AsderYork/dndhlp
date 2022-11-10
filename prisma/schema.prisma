@@ -19,6 +19,7 @@ model User {
   CampaignPlayers        CampaignPlayers[]
   CampaignInvitesInvited CampaignInvites[] @relation("invited")
   CampaignInvitesAuthor  CampaignInvites[] @relation("author")
+  settings               String?
 
   @@unique([name, password])
 }

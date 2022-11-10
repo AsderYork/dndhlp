@@ -20,6 +20,7 @@ export default async function ({ $auth }) {
       var decodedToken = jsonwebtoken.verify(tokenString, 'dummy');
       if(decodedToken.user) {
         var user = await prisma.User.findUnique({where: {id: decodedToken.user.id}, include:{CampaignPlayers:{include:{Campaign:true}}}});
+        user.settings = user.settings == null ? {} : JSON.parse(user.settings);
         if(user) {
           $auth.setUser(user);
         }
