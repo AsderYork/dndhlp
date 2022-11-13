@@ -15,6 +15,7 @@
 export default {
   name: "windowEdit",
   props: {
+    
     header: {
       type: String,
       default: 'window',
@@ -45,12 +46,15 @@ export default {
 
     mouseup(event) {
       this.isMoving = false;
+      document.body.classList.remove('unselectable');
+
     },
     mousedown(event) {
       if(window.getComputedStyle(this.$refs.wndcap).position === 'absolute') {
         this.$emit('requestMoveToFront');
         this.offset = { x: event.offsetX, y: event.offsetY };
         this.isMoving = true;
+        document.body.classList.add('unselectable');
       }
     },
     resizeMouseDown(event) {},
@@ -63,6 +67,7 @@ export default {
     document.addEventListener('mouseup', this.mouseup);
   },
   beforeDestroy() {
+    document.body.classList.remove('unselectable');
     document.removeEventListener('mousemove', this.mousemove);
     document.removeEventListener('mouseup', this.mouseup);
   },

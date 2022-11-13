@@ -34,12 +34,12 @@
         </div>
 
         <div>
-          <div>
+          <div v-if="currentCharacter.class">
             <v-select style="min-width: 270px;" v-if="editable" v-model="currentCharacter.class"
               :options="avaliableClasses" label="name" :clearable="false"></v-select>
             <span v-else>{{ currentCharacter.class.name }}</span>
           </div>
-          <div>
+          <div v-if="currentCharacter.race">
             <v-select style="min-width: 270px;" v-if="editable" v-model="currentCharacter.race"
               :options="avaliableRaces" label="name" :clearable="false"></v-select>
             <span v-else>{{ currentCharacter.race.name }}</span>

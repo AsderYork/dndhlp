@@ -75,13 +75,7 @@
                   <font-awesome-icon :icon="['fa', 'hand-fist']" /> Start a battle
                 </a>
                 <a class="dropdown-item" href="#" @click="addCampaignStatusWindow">
-                  <font-awesome-icon :icon="['fa', 'hand-fist']" /> Campaign
-                </a>
-                <a class="dropdown-item" href="#" @click="nextTheme">
-                  <font-awesome-icon :icon="['fa', 'palette']" /> Next theme
-                </a>
-                <a class="dropdown-item" href="#" @click="toggleFloat">
-                  <font-awesome-icon :icon="['fa', 'cloud']" /> afloat
+                  <font-awesome-icon :icon="['fa', 'dice-d20']" /> Campaign
                 </a>
                 <a class="dropdown-item" href="#" @click="addProfileWindow">
                   <font-awesome-icon :icon="['fa', 'user']" /> profile
