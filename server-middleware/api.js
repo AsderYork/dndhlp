@@ -39,6 +39,19 @@ const currentUserId = 1;
 
 const prisma = new PrismaClient();
 app.use(bodyParser.json())
+
+
+async function fetchCampaign(campaignId) {
+    var campaign = await prisma.Campaign.findUnique({
+        where: {id: campaignId},
+        include: {CampaignPlayers:{ include: {User: true, Role:true}}, CampaignInvites:{where:{deactivated:false, accepted:false}, include: {User: true}}}
+      });
+    
+    campaign.settings = campaign.settings == null ? {} : JSON.parse(campaign.settings);
+    return campaign;
+}
+
+
 app.all('/charatersPalette', async (req, res) => {
 
 
@@ -129,6 +142,26 @@ app.all('/currentCampaign', async (req, res) => {
     res.json({campaign:campaign});
 });
 
+app.all('/getCampaign', async (req, res) => {
+    const campaignId = parseInt(req.query.id);
+    var campaign = await fetchCampaign(campaignId);
+    res.json({campaign:campaign});
+});
+
+app.post('/updateCampaign', async (req, res) => {
+    var newCampaignData = req.body;
+    if(newCampaignData.settings) { newCampaignData.settings = JSON.stringify(newCampaignData.settings); }
+
+    const id = newCampaignData.id;
+    const allowedFields = ['name', 'settings', 'description'];
+    newCampaignData = Object.fromEntries(Object.entries(newCampaignData).filter(([key]) => allowedFields.includes(key)));
+
+    await prisma.Campaign.update({where:{id: id}, data:newCampaignData});
+    var campaign = await fetchCampaign(campaignId);
+    res.json({status:'ok', campaign:campaign});
+});
+
+
 
 
 app.all('/campaignInvitesList', async (req, res) => {
@@ -185,13 +218,16 @@ app.post('/campaignInvitesCreate', async (req, res) => {
     }
 
     var newInvite = await prisma.CampaignInvites.create({data:invite});
-    res.json({status:'ok'});
+
+    var campaign = await fetchCampaign(campaignId);
+    res.json({status:'ok', campaign: campaign});
 });
 
 app.post('/campaignInvitesDelete', async (req, res) => {
     var invite = req.body.invite;
     var newInvite = await prisma.CampaignInvites.update({where:{id:invite.id}, data:{deactivated:true}});
-    res.json({status:'ok'});
+    var campaign = await fetchCampaign(campaignId);
+    res.json({status:'ok', campaign: campaign});
 });
 
 

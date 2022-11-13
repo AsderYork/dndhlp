@@ -183,6 +183,9 @@ export default Vue.extend({
   watch: {
     "battleCounterState": function (vv) {
       this.$root.mainSocket.emit('battleCounter', vv, (resp) => { console.log(resp); });
+    },
+    userCurrentTheme() {
+      this.$store.commit('setColors', this.themeColors[this.userCurrentTheme]);
     }
   },
 
@@ -218,7 +221,7 @@ export default Vue.extend({
       $nuxt.$emit('startWindow', { window: 'userprofile', windowHeader: `User Profile ${this.$auth.$state.user.name}`, props:{user:this.$auth.$state.user}});
     },
     addCampaignStatusWindow() {
-      $nuxt.$emit('startWindow', { window: 'CampaignStatus', windowHeader: 'Campaign' });
+      $nuxt.$emit('startWindow', { window: 'CampaignStatus', windowHeader: 'Campaign', props:{campaign:this.$auth.$state.user.CampaignPlayers[0].Campaign} });
     },
     moveWindowToFront(window) {
       if (this.userUseAfloat) {
@@ -281,7 +284,7 @@ export default Vue.extend({
     }
 
 
-    this.$store.commit('setColors', this.themeColors[this.currentTheme]);
+    this.$store.commit('setColors', this.themeColors[this.userCurrentTheme]);
   },
   async fetch() {
     const request = await this.$axios.$get('/api/charatersPalette');

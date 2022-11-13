@@ -4,8 +4,10 @@
             <span @click="startEditing" v-if="!isEditing">
                 {{ changableValue }}
             </span>
-            <input :type="htmlType" v-else v-model="tmpValue" class="form-control" ref="editableField"
-                @blur="stopEditing" @keydown="keydown" />
+            <span v-else>
+            <textarea v-if="isTextarea" :type="htmlType" v-model="tmpValue" class="form-control" ref="editableField" @blur="stopEditing" @keydown="keydown"></textarea>
+            <input v-else :type="htmlType" v-model="tmpValue" class="form-control" ref="editableField" @blur="stopEditing" @keydown="keydown" />
+            </span>
         </span>
         <span v-else>
             {{ changableValue }}
@@ -18,6 +20,10 @@
 export default {
     props: {
         value: {},
+        isTextarea: {
+            type: Boolean,
+            default: false,
+        },
         editable: {
             type: Boolean,
             default: false,
@@ -39,9 +45,19 @@ export default {
             tmpValue: this.value,
         }
     },
+    watch: {
+        value(newValue) {
+            this.content = newValue;
+            this.content = newValue;
+        }
+    },
+    
     computed: {
         changableValue: {
             get() {
+                if(!this.content) {
+                    return '-empty-';
+                }
                 return this.content;
             },
             set(val) {
@@ -74,11 +90,13 @@ export default {
         },
         stopEditing() {
             this.isEditing = false;
-            if (this.tmpValue != '') {
+            if (['numberex', 'number'].includes(this.type) && this.tmpValue != '') {
                 if (this.type === 'numberex' && (typeof this.tmpValue === 'string' || this.tmpValue instanceof String)) {
                     this.tmpValue = eval(this.tmpValue.replace(/[^-()\d/*+.]/g, ''));
 
                 }
+                this.changableValue = this.tmpValue;
+            } else {
                 this.changableValue = this.tmpValue;
             }
         },

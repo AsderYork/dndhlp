@@ -27,6 +27,8 @@ model User {
 model Campaign {
   id              Int               @id @default(autoincrement())
   name            String
+  description     String?
+  settings        String?
   Characters      Character[]
   CampaignPlayers CampaignPlayers[]
   CampaignInvites CampaignInvites[]

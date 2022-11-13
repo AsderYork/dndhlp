@@ -14,6 +14,11 @@
               aria-selected="false">
               Members
             </button>
+            <button class="nav-link rounded-0" id="v-pills-resources-tab" data-bs-toggle="pill"
+              data-bs-target="#v-pills-resources" type="button" role="tab" aria-controls="v-pills-resources"
+              aria-selected="false">
+              Resources
+            </button>
           </div>
         </div>
         <div class="border-left px-2 w-100">
@@ -21,27 +26,27 @@
             <div class="tab-content" id="v-pills-tabContent">
               <div class="tab-pane fade show active" id="v-pills-description" role="tabpanel"
                 aria-labelledby="v-pills-description-tab">
-                <h2 class="text-center">{{ name }}</h2>
-                A test compain for evaluating possibilities of a tool
+                <h2 class="text-center" v-if="currentCampaign"> <assistEditableInput  v-model="campaignName" :editable="editable"></assistEditableInput></h2>
+                <assistEditableInput  v-model="campaignDescription" :editable="editable" :isTextarea="true"></assistEditableInput>
               </div>
               <div class="tab-pane fade" id="v-pills-users" role="tabpanel" aria-labelledby="v-pills-users-tab">
                 <div v-if="campaignPlayers" class="d-flex flex-column" style="gap:0.25rem">
-                  <div class="card p-2" v-for="player in campaignPlayers">
+                  <div class="card p-2" v-for="player in campaignPlayers" :key="player.id">
                     <div class="d-flex" style="gap:0.25rem">
                       <div class="h2 mb-0">{{ player.User.name }}</div>
                       <small class="text-muted ml-1 mt-auto">{{ player.Role.name }}</small>
                     </div>
                   </div>
                 </div>
-                <div v-if="liveInvites.length > 0" class="border-top mt-2">
+                <div v-if="knownInvites.length > 0" class="border-top mt-2">
                   <div class="">
                     <h2 class="mb-0">Invites</h2>
                   </div>
-                  <div v-for="invite in liveInvites" class="card p-2">
+                  <div v-for="invite in knownInvites" class="card p-2">
                     <div class="d-flex flex-wrap justify-content-center">
 
                       <div class="text-center">
-                        <div v-if="invite.User === null">
+                        <div v-if="invite.User == null">
                           <h3 class="mb-n1">{{ invite.newUsername }}</h3>
                           <small class="text-muted">Unregistered user</small>
                         </div>
@@ -64,7 +69,7 @@
                           </div>
                         </div>
                       </div>
-                      
+
                       <div class="d-flex ml-2">
                         <div class="my-auto">
                           Sent: {{ invite.dateCreated | formatDateFull }}
@@ -88,6 +93,11 @@
                   </button>
                 </div>
 
+              </div>
+              <div class="tab-pane fade" id="v-pills-resources" role="tabpanel" aria-labelledby="v-pills-resources-tab">
+                <h2 class="text-center">Resources</h2>
+                External database
+                <input type="text" class="form-control" />
               </div>
             </div>
           </div>
@@ -123,7 +133,7 @@
     <modal name="cancel-ivite-warning" :adaptive="true">
       <assistModalLook caption="Revoke invite" @ok="cancelInvite" captionClass="bg-warning" okButtonText="revoke invite"
         okButtonClass="bg-danger text-dark">
-        Are you shure you want to cancel invite to {{ canelingInvite?.newUsername }}?
+        Are you sure you want to cancel invite to {{ canelingInvite?.newUsername }}?
       </assistModalLook>
     </modal>
 
@@ -134,13 +144,33 @@
 export default {
   name: 'CampaignStatus',
 
+  props: {
+    editable: {
+      type: Boolean,
+      default: true,
+    },
+    campaign: {
+      type: Object,
+      default() {
+        return {
+          name: 'Unnamed',
+          settings: {
+            remoteDatabases:[],
+          },
+          knownUsers:[],
+          currentInvites:[],
+        }
+      }
+    },
+  },
+
   data() {
     return {
       fetchedUsers: [],
-      knownInvites: [],
       currentInvite: null,
       userSelectedForInvite: null,
       canelingInvite: null,
+      currentCampaign: {},
     }
   },
 
@@ -149,18 +179,43 @@ export default {
       return this.$store.state.currentCampaign.name;
     },
     campaignPlayers() {
-      return this.$store.state.currentCampaign.campaignPlayers;
+      return this.currentCampaign.CampaignPlayers;
     },
     knownUsers() {
       return this.fetchedUsers;
     },
-
-    liveInvites() {
-      return this.knownInvites.filter(x => x.deactivated === false);
+    knownInvites() {
+      if(!this.currentCampaign.CampaignInvites) {
+        return [];
+      }
+      return this.currentCampaign.CampaignInvites;
     },
     mainColors() {
       return this.$store.state.colors;
-    }
+    },
+
+    campaignName: {
+      get() {
+        return this.currentCampaign.name;
+      },
+      set(val) {
+        this.currentCampaign.name = val;
+        this.updateCampaign();
+      }
+    },
+    campaignDescription: {
+      get() {
+        var description = this.currentCampaign.description;
+        if(!description) {
+          description = "Description";
+        }
+        return description;
+      },
+      set(val) {
+        this.currentCampaign.description = val;
+        this.updateCampaign();
+      }
+    },
 
   },
 
@@ -197,9 +252,10 @@ export default {
         newInvite.newUsername = this.userSelectedForInvite.name;
       }
 
-      await this.$axios.$post('/api/campaignInvitesCreate', newInvite);
-      const invites = await this.$axios.$get('/api/campaignInvitesList');
-      this.knownInvites = invites.invites;
+      const request = await this.$axios.$post('/api/campaignInvitesCreate', newInvite);
+      this.updateCampaign(false, request.campaign);
+
+      
     },
 
     tryCancelInvite(cancelInvite) {
@@ -208,12 +264,11 @@ export default {
     },
 
     async cancelInvite() {
-      await this.$axios.$post('/api/campaignInvitesDelete', { invite: { id: this.canelingInvite.id } });
       this.$modal.hide('cancel-ivite-warning');
-      this.canelingInvite = null;
 
-      const invites = await this.$axios.$get('/api/campaignInvitesList');
-      this.knownInvites = invites.invites;
+      const request = await this.$axios.$post('/api/campaignInvitesDelete', { invite: { id: this.canelingInvite.id } });
+      this.updateCampaign(false, request.campaign);
+      this.canelingInvite = null;
     },
 
     showQRCode(invite) {
@@ -224,15 +279,34 @@ export default {
 
     tokenToUrl(token) {
       return 'https://ifpio.org/login?token=' + token;
+    },
+
+    async updateCampaign(forceFetch = false, campaignData = null) {
+      var newCampaignData = campaignData;
+
+      if (newCampaignData === null) {
+
+        if (this.currentCampaign && !forceFetch) {
+          const response = await this.$axios.$post('/api/updateCampaign', this.currentCampaign);
+          newCampaignData = response.campaign;
+        } else {
+          const campaign = await this.$axios.$get('/api/getCampaign', { params: { id: this.campaign.id } });
+          newCampaignData = campaign.campaign;
+        }
+      }
+      
+      if(newCampaignData.settings && (typeof newCampaignData.settings === 'string' || newCampaignData.settings instanceof String)) {newCampaignData.settings = JSON.parse(newCampaignData.settings);}
+      this.currentCampaign = newCampaignData;
     }
 
   },
 
   async fetch() {
-    const request = await this.$axios.$get('/api/currentCampaign');
-    this.$store.dispatch('currentCampaign/setState', request.campaign);
-    const invites = await this.$axios.$get('/api/campaignInvitesList');
-    this.knownInvites = invites.invites;
+
+    if(this.campaign.id) {
+      await this.updateCampaign(true);
+    }
+
   },
 }
 </script>

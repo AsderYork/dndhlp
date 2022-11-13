@@ -2,7 +2,7 @@
   <div>
     <div class="p-1 pl-2">
       <div class="text-center d-flex justify-content-center border-bottom px-2 mb-2">
-        <div class="position-absolute" sty>
+        <div class="position-absolute">
 
         </div>
         <h2 class="mb-0">
