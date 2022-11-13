@@ -6,7 +6,7 @@
 
         </div>
         <h2 class="mb-0">
-          <assistEditableInput v-model="currentCharacter.name" editable="editable" />
+          <assistEditableInput v-model="currentCharacter.name" :editable="editable" />
         </h2>
       </div>
       <div class="position-absolute text-muted" style="right: 15px;" v-if="currentCharacter.id"><small>id:{{currentCharacter.id}}</small></div>
@@ -14,11 +14,11 @@
         <div class="border border-secondary rounded bg-primary d-flex">
           <div class="my-auto text-center font-weight-bold">
             <div class="px-2 border-bottom mx-1 pb-1">
-              <assistEditableInput v-model="currentCharacter.health" type="numberex" editable="editable"
+              <assistEditableInput v-model="currentCharacter.health" type="numberex" :editable="editable"
                 :selectOnEdit="false" />
             </div>
             <div class="px-2 mx-1 pt-1">
-              <assistEditableInput v-model="currentCharacter.maxHealth" type="numberex" editable="editable"
+              <assistEditableInput v-model="currentCharacter.maxHealth" type="numberex" :editable="editable"
                 :selectOnEdit="false" />
             </div>
           </div>
@@ -27,7 +27,7 @@
         <div class="border border-secondary rounded bg-info d-flex">
           <div class="my-auto">
             <div class="px-2 mx-1 pt-1 font-weight-bold">
-              <assistEditableInput v-model="currentCharacter.armourClass" type="number" editable="editable"
+              <assistEditableInput v-model="currentCharacter.armourClass" type="number" :editable="editable"
                 :selectOnEdit="false" />
             </div>
           </div>
@@ -42,14 +42,14 @@
           <div>
             <v-select style="min-width: 270px;" v-if="editable" v-model="currentCharacter.race"
               :options="avaliableRaces" label="name" :clearable="false"></v-select>
-            <span v-else>{{ currentCharacter.class.name }}</span>
+            <span v-else>{{ currentCharacter.race.name }}</span>
           </div>
         </div>
 
         <div class="border border-secondary rounded bg-secondary d-flex">
           <div class="my-auto">
             <div class="px-2 mx-1 pt-1 font-weight-bold">
-              Lvl.<assistEditableInput v-model="currentCharacter.level" type="numberex" editable="editable"
+              Lvl.<assistEditableInput v-model="currentCharacter.level" type="numberex" :editable="editable"
                 :selectOnEdit="false" />
             </div>
           </div>
@@ -66,7 +66,7 @@
               class="mx-auto imgbg-unrepeatable statblock-item d-flex">
               <div class="mx-auto my-auto">
                 <div class="h1 mb-n2">
-                  <assistEditableInput type="number" v-model="currentCharacter.attributes[attribute.name]" editable="editable" />
+                  <assistEditableInput type="number" v-model="currentCharacter.attributes[attribute.name]" :editable="editable" />
                 </div>
                 <div class="text-center mb-n2">{{ attribute.modifier }}</div>
               </div>
@@ -89,7 +89,7 @@ export default {
   props: {
     editable: {
       type: Boolean,
-      default: true,
+      default: false,
     },
     value: {
       type: Object,

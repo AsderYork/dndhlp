@@ -110,7 +110,7 @@ export default {
                 this.$emit('input', this.presentedUser);
                 if (this.temporaryIgnoreForeignChange) {
                     this.temporaryIgnoreForeignChange = false;
-                } else if(editable) {
+                } else if(this.editable) {
                     const response = await this.$axios.$post('/api/changeUser', this.presentedUser);
                     this.$auth.setUser(response.user);
                     $nuxt.$emit('userChanged', { user: response.user, source: this._uid });

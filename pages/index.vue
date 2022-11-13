@@ -157,7 +157,6 @@ export default Vue.extend({
   data: function () {
     return {
       windowIdCounter: 0,
-      floatwindows: false,
       avaliableThemes: ['darktheme-pur', 'darktheme-gol', 'notheme'],
       themeColors: {
         'darktheme-pur': { primary: '#694481', background: '#252525' },
@@ -228,7 +227,7 @@ export default Vue.extend({
       $nuxt.$emit('startWindow', { window: 'CampaignStatus', windowHeader: 'Campaign' });
     },
     moveWindowToFront(window) {
-      if (this.floatwindows) {
+      if (this.userUseAfloat) {
         this.$store.dispatch('moveWindowToFront', window);
       }
     },
