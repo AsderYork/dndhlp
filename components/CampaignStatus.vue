@@ -26,8 +26,11 @@
             <div class="tab-content" id="v-pills-tabContent">
               <div class="tab-pane fade show active" id="v-pills-description" role="tabpanel"
                 aria-labelledby="v-pills-description-tab">
-                <h2 class="text-center" v-if="currentCampaign"> <assistEditableInput  v-model="campaignName" :editable="editable"></assistEditableInput></h2>
-                <assistEditableInput  v-model="campaignDescription" :editable="editable" :isTextarea="true"></assistEditableInput>
+                <h2 class="text-center" v-if="currentCampaign">
+                  <assistEditableInput v-model="campaignName" :editable="editable"></assistEditableInput>
+                </h2>
+                <assistEditableInput v-model="campaignDescription" :editable="editable" :isTextarea="true">
+                </assistEditableInput>
               </div>
               <div class="tab-pane fade" id="v-pills-users" role="tabpanel" aria-labelledby="v-pills-users-tab">
                 <div v-if="campaignPlayers" class="d-flex flex-column" style="gap:0.25rem">
@@ -96,14 +99,37 @@
               </div>
               <div class="tab-pane fade" id="v-pills-resources" role="tabpanel" aria-labelledby="v-pills-resources-tab">
                 <h2 class="text-center">Resources</h2>
-                External database
-                <input type="text" class="form-control" />
+                <b-table striped hover :items="activeDatabases" class="mb-0 table table-sm" :fields="['url', '']">
+                  <template #cell(url)="row">
+                    {{row.item.url}}
+                    <a href="#" class="text-danger" @click.prevent="removeDatabase(row.item)">
+                      <font-awesome-icon :icon="['fa', 'times']"/>
+                    </a>
+                  </template>
+                </b-table>
+                <button class="btn btn-primary w-100" @click="$modal.show('add-database');">
+                  <font-awesome-icon :icon="['fa', 'plus']" /> Add
+                </button>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    <modal name="add-database" :adaptive="true">
+      <assistModalLook caption="Add database" @cancel="stopAddingDatabase" @ok="AddNewDatabase">
+        <div class="text-center">
+          <div class="border-bottom">
+            <h3>Add Database</h3>
+            <div>
+              <v-select v-model="addingDatabase" :options="knownDatabases" :taggable="true" />
+            </div>
+          </div>
+        </div>
+      </assistModalLook>
+
+    </modal>
 
     <modal name="add-player-modal" :adaptive="true">
       <assistModalLook caption="Add new player" @cancel="stopAddingNewPlayer" @ok="sendCreateInvite">
@@ -155,10 +181,10 @@ export default {
         return {
           name: 'Unnamed',
           settings: {
-            remoteDatabases:[],
+            remoteDatabases: [],
           },
-          knownUsers:[],
-          currentInvites:[],
+          knownUsers: [],
+          currentInvites: [],
         }
       }
     },
@@ -171,6 +197,8 @@ export default {
       userSelectedForInvite: null,
       canelingInvite: null,
       currentCampaign: {},
+      knownDatabases: ['https://www.dnd5eapi.co/'],
+      addingDatabase: null,
     }
   },
 
@@ -185,13 +213,20 @@ export default {
       return this.fetchedUsers;
     },
     knownInvites() {
-      if(!this.currentCampaign.CampaignInvites) {
+      if (!this.currentCampaign.CampaignInvites) {
         return [];
       }
       return this.currentCampaign.CampaignInvites;
     },
     mainColors() {
       return this.$store.state.colors;
+    },
+
+    activeDatabases() {
+      if (this.currentCampaign?.settings?.externalDatabases) {
+        return this.currentCampaign.settings.externalDatabases;
+      }
+      return [];
     },
 
     campaignName: {
@@ -206,7 +241,7 @@ export default {
     campaignDescription: {
       get() {
         var description = this.currentCampaign.description;
-        if(!description) {
+        if (!description) {
           description = "Description";
         }
         return description;
@@ -237,6 +272,37 @@ export default {
       return { newUsername: name, name: name };
     },
 
+    AddNewDatabase() {
+      this.$modal.hide('add-database');
+
+      if (!this.currentCampaign.settings) {
+        this.currentCampaign.settings = {};
+      }
+      if (!this.currentCampaign.settings.externalDatabases) {
+        this.currentCampaign.settings.externalDatabases = [];
+      }
+
+      this.currentCampaign.settings.externalDatabases.push({ url: this.addingDatabase });
+      this.updateCampaign();
+    },
+
+    removeDatabase(item) {
+      if (!this.currentCampaign.settings) {
+        this.currentCampaign.settings = {};
+      }
+      if (!this.currentCampaign.settings.externalDatabases) {
+        this.currentCampaign.settings.externalDatabases = [];
+      }
+
+      this.currentCampaign.settings.externalDatabases = this.currentCampaign.settings.externalDatabases.filter(x => x.url !== item.url);
+      this.updateCampaign();
+    },
+
+    stopAddingDatabase() {
+      this.$modal.hide('add-database');
+    },
+
+
     async sendCreateInvite(name) {
       this.$modal.hide('add-player-modal');
 
@@ -255,7 +321,7 @@ export default {
       const request = await this.$axios.$post('/api/campaignInvitesCreate', newInvite);
       this.updateCampaign(false, request.campaign);
 
-      
+
     },
 
     tryCancelInvite(cancelInvite) {
@@ -294,8 +360,8 @@ export default {
           newCampaignData = campaign.campaign;
         }
       }
-      
-      if(newCampaignData.settings && (typeof newCampaignData.settings === 'string' || newCampaignData.settings instanceof String)) {newCampaignData.settings = JSON.parse(newCampaignData.settings);}
+
+      if (newCampaignData.settings && (typeof newCampaignData.settings === 'string' || newCampaignData.settings instanceof String)) { newCampaignData.settings = JSON.parse(newCampaignData.settings); }
       this.currentCampaign = newCampaignData;
     }
 
@@ -303,7 +369,7 @@ export default {
 
   async fetch() {
 
-    if(this.campaign.id) {
+    if (this.campaign.id) {
       await this.updateCampaign(true);
     }
 
